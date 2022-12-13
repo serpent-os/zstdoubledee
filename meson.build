@@ -16,10 +16,15 @@ subdir('source/zstdd')
 lib = static_library(meson.project_name(),
     sources: src_lib,
     dependencies: [dep_zstd],
-    include_directories: include_directories('source'),
+    include_directories: src_include,
     install: shouldInstall,
 )
 
 if get_option('tests')
-    subdir('tests')
+    exe_test = executable(meson.project_name() + '_test',
+        sources: src_lib,
+        include_directories: src_include,
+        d_unittest: true,
+    )
+    test('tests', exe_test)
 endif

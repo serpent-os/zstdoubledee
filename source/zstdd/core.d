@@ -8,6 +8,10 @@ uint32_t versionNumber() @trusted {
     return ZSTD_versionNumber();
 }
 
+unittest {
+    assert(1==1);
+}
+
 char[] versionString() @trusted {
     extern (C) char* ZSTD_versionString();
     return std.string.fromStringz(ZSTD_versionString());
