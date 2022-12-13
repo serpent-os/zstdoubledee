@@ -19,3 +19,7 @@ lib = static_library(meson.project_name(),
     include_directories: include_directories('source'),
     install: shouldInstall,
 )
+
+if get_option('tests')
+    subdir('tests')
+endif
