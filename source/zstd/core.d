@@ -1,5 +1,6 @@
 module zstd.core;
 
+import std.format;
 import std.stdint;
 import std.string;
 
@@ -45,4 +46,13 @@ CompressionLevel maxCompressionLevel() @trusted
 unittest
 {
     assert(maxCompressionLevel() >= 22);
+}
+
+class ZSTDException : Exception
+{
+    this(size_t code, string filename = __FILE__, size_t line = __LINE__) @trusted
+    {
+        auto name = std.string.fromStringz(ZSTD_getErrorName(code));
+        super(std.format.format("%s (%d)", cast(string) name, code), filename, line);
+    }
 }
