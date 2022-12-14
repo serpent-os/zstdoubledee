@@ -16,9 +16,9 @@ unittest
     assert(versionNumber() > 0);
 }
 
-char[] versionString() @trusted
+string versionString() @trusted
 {
-    return std.string.fromStringz(ZSTD_versionString());
+    return cast(string) std.string.fromStringz(ZSTD_versionString());
 }
 
 unittest
