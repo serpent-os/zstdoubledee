@@ -56,3 +56,13 @@ class ZSTDException : Exception
         super(std.format.format("%s (%d)", cast(string) name, code), filename, line);
     }
 }
+
+size_t compress(void* dst, size_t dstCapacity, void* src, size_t srcSize, CompressionLevel lvl) @trusted
+{
+    auto size = ZSTD_compress(dst, dstCapacity, src, srcSize, lvl);
+    if (ZSTD_isError(size))
+    {
+        throw new ZSTDException(size);
+    }
+    return size;
+}
