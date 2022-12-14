@@ -1,1 +1,7 @@
+.dub/
+.vscode/
 build/
+
+*.a
+dub.selections.json
+zstd-d-test-library
