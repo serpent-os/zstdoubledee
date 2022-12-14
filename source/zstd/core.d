@@ -76,3 +76,9 @@ size_t decompress(void* dst, size_t dstCapacity, void* src, size_t compressedSiz
     }
     return size;
 }
+
+uint64_t getFrameContentSize(const void* src, size_t srcSize) @trusted
+{
+    // TODO: exception handling with a proper exception type.
+    return ZSTD_getFrameContentSize(src, srcSize);
+}
