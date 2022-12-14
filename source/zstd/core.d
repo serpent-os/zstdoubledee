@@ -66,3 +66,13 @@ size_t compress(void* dst, size_t dstCapacity, void* src, size_t srcSize, Compre
     }
     return size;
 }
+
+size_t decompress(void* dst, size_t dstCapacity, void* src, size_t compressedSize) @trusted
+{
+    auto size = ZSTD_decompress(dst, dstCapacity, src, compressedSize);
+    if (ZSTD_isError(size))
+    {
+        throw new ZSTDException(size);
+    }
+    return size;
+}
