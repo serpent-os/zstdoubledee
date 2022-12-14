@@ -32,7 +32,17 @@ CompressionLevel minCompressionLevel() @trusted
     return ZSTD_minCLevel();
 }
 
+unittest
+{
+    assert(minCompressionLevel() < 0);
+}
+
 CompressionLevel maxCompressionLevel() @trusted
 {
     return ZSTD_maxCLevel();
+}
+
+unittest
+{
+    assert(maxCompressionLevel() >= 22);
 }
