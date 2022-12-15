@@ -91,6 +91,15 @@ class DecompressionContext
         return size;
     }
 
+    void setParameter(DecompressionParameter param, int value)
+    {
+        const auto errCode = ZSTD_DCtx_setParameter(ptr, param, value);
+        if (ZSTD_isError(errCode))
+        {
+            throw new ZSTDException(errCode);
+        }
+    }
+
 private:
     ZSTD_DCtx* ptr;
 }

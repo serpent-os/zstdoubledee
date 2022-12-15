@@ -39,5 +39,6 @@ extern (C) @nogc nothrow
     ZSTD_DCtx* ZSTD_createDCtx();
     size_t ZSTD_freeDCtx(ZSTD_DCtx* dctx);
     size_t ZSTD_decompressDCtx(ZSTD_DCtx* dctx, void* dst, size_t dstCapacity, const void* src, size_t srcSize);
+    size_t ZSTD_DCtx_setParameter(ZSTD_DCtx* dctx, DecompressionParameter param, int value);
     Bounds ZSTD_dParam_getBounds(DecompressionParameter);
 }
