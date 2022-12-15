@@ -2,6 +2,7 @@ module zstd.context;
 
 import zstd.c.symbols;
 import zstd.simple;
+public import zstd.c.typedefs : Strategy, CompressionParameter, Bounds;
 
 class CompressionContext
 {
@@ -23,6 +24,15 @@ class CompressionContext
             throw new ZSTDException(size);
         }
         return size;
+    }
+
+    void setParameter(CompressionParameter param, int value)
+    {
+        const auto errCode = ZSTD_CCtx_setParameter(ptr, param, value);
+        if (ZSTD_isError(errCode))
+        {
+            throw new ZSTDException(errCode);
+        }
     }
 
 private:
@@ -53,4 +63,15 @@ class DecompressionContext
 
 private:
     ZSTD_DCtx* ptr;
+}
+
+Bounds getBounds(CompressionParameter cp)
+{
+    return ZSTD_cParam_getBounds(cp);
+}
+
+unittest
+{
+    const auto bounds = getBounds(CompressionParameter.CompressionLevel);
+    assert(bounds.lowerBound < 0);
 }

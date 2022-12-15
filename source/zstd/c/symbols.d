@@ -28,6 +28,7 @@ extern (C) @nogc nothrow
     ZSTD_CCtx* ZSTD_createCCtx();
     void ZSTD_freeCCtx(ZSTD_CCtx* cctx);
     size_t ZSTD_compressCCtx(ZSTD_CCtx* cctx, void* dst, size_t dstCap, const void* src, size_t srcSize, int compLvl);
+    size_t ZSTD_CCtx_setParameter(ZSTD_CCtx* cctx, CompressionParameter param, int value);
 
     struct ZSTD_DCtx_s;
     alias ZSTD_DCtx = ZSTD_DCtx_s;
