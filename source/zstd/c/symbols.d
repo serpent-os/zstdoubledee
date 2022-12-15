@@ -16,7 +16,7 @@ extern (C) @nogc nothrow
     uint32_t ZSTD_isError(size_t);
     char* ZSTD_getErrorName(size_t);
 
-    size_t ZSTD_compress(void* dst, size_t dstCapacity, const void* src, size_t srcSize, int compressionLevel);
+    size_t ZSTD_compress(void* dst, size_t dstCapacity, const void* src, size_t srcSize, int32_t compressionLevel);
     size_t ZSTD_decompress(void* dst, size_t dstCapacity, void* src, size_t compressedSize);
     size_t ZSTD_findFrameCompressedSize(void* src, size_t srcSize);
     size_t ZSTD_compressBound(size_t srcSize);
@@ -25,13 +25,11 @@ extern (C) @nogc nothrow
 
     struct ZSTD_CCtx_s;
     alias ZSTD_CCtx = ZSTD_CCtx_s;
-    alias ZSTD_CStream = ZSTD_CCtx;
     ZSTD_CCtx* ZSTD_createCCtx();
     void ZSTD_freeCCtx(ZSTD_CCtx* cctx);
-    size_t ZSTD_compressCCtx(ZSTD_CCtx* cctx, void* dst, size_t dstCap, const void* src, size_t srcSize, int compLvl);
+    size_t ZSTD_compressCCtx(ZSTD_CCtx* cctx, void* dst, size_t dstCap, const void* src, size_t srcSize, int32_t compLvl);
     size_t ZSTD_compress2(ZSTD_CCtx* cctx, void* dst, size_t dstCapacity, void* src, size_t srcSize);
-    size_t ZSTD_compressStream2(ZSTD_CCtx* cctx, OutBuffer* output, InBuffer* input, EndDirective endOp);
-    size_t ZSTD_CCtx_setParameter(ZSTD_CCtx* cctx, CompressionParameter param, int value);
+    size_t ZSTD_CCtx_setParameter(ZSTD_CCtx* cctx, CompressionParameter param, int32_t value);
     size_t ZSTD_CCtx_setPledgedSrcSize(ZSTD_CCtx* cctx, uint64_t pledgedSrcSize);
     size_t ZSTD_CCtx_reset(ZSTD_CCtx* cctx, ResetDirective reset);
     Bounds ZSTD_cParam_getBounds(CompressionParameter);
@@ -41,7 +39,18 @@ extern (C) @nogc nothrow
     ZSTD_DCtx* ZSTD_createDCtx();
     size_t ZSTD_freeDCtx(ZSTD_DCtx* dctx);
     size_t ZSTD_decompressDCtx(ZSTD_DCtx* dctx, void* dst, size_t dstCapacity, const void* src, size_t srcSize);
-    size_t ZSTD_DCtx_setParameter(ZSTD_DCtx* dctx, DecompressionParameter param, int value);
+    size_t ZSTD_DCtx_setParameter(ZSTD_DCtx* dctx, DecompressionParameter param, int32_t value);
     size_t ZSTD_DCtx_reset(ZSTD_DCtx* dctx, ResetDirective reset);
     Bounds ZSTD_dParam_getBounds(DecompressionParameter);
+
+    alias ZSTD_CStream = ZSTD_CCtx;
+    ZSTD_CStream* ZSTD_createCStream();
+    size_t ZSTD_freeCStream(ZSTD_CStream* zcs);
+    size_t ZSTD_initCStream(ZSTD_CStream* zcs, int32_t compressionLevel);
+    size_t ZSTD_compressStream(ZSTD_CStream* zcs, OutBuffer* output, InBuffer* input);
+    size_t ZSTD_compressStream2(ZSTD_CCtx* cctx, OutBuffer* output, InBuffer* input, EndDirective endOp);
+    size_t ZSTD_flushStream(ZSTD_CStream* zcs, OutBuffer* output);
+    size_t ZSTD_endStream(ZSTD_CStream* zcs, OutBuffer* output);
+    size_t ZSTD_CStreamInSize();
+    size_t ZSTD_CStreamOutSize();
 }

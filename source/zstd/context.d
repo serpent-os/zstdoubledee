@@ -44,16 +44,6 @@ class CompressionContext
         return size;
     }
 
-    size_t compressStream(OutBuffer* output, InBuffer* input, EndDirective endOp)
-    {
-        const auto remain = ZSTD_compressStream2(ptr, output, input, endOp);
-        if (ZSTD_isError(remain))
-        {
-            throw new ZSTDException(remain);
-        }
-        return remain;
-    }
-
     void setParameter(CompressionParameter param, int value)
     {
         const auto errCode = ZSTD_CCtx_setParameter(ptr, param, value);
