@@ -32,12 +32,12 @@ extern (C) @nogc nothrow
     size_t ZSTD_CCtx_setParameter(ZSTD_CCtx* cctx, CompressionParameter param, int value);
     size_t ZSTD_CCtx_setPledgedSrcSize(ZSTD_CCtx* cctx, uint64_t pledgedSrcSize);
     size_t ZSTD_CCtx_reset(ZSTD_CCtx* cctx, ResetDirective reset);
+    Bounds ZSTD_cParam_getBounds(CompressionParameter);
 
     struct ZSTD_DCtx_s;
     alias ZSTD_DCtx = ZSTD_DCtx_s;
     ZSTD_DCtx* ZSTD_createDCtx();
     size_t ZSTD_freeDCtx(ZSTD_DCtx* dctx);
     size_t ZSTD_decompressDCtx(ZSTD_DCtx* dctx, void* dst, size_t dstCapacity, const void* src, size_t srcSize);
-
-    Bounds ZSTD_cParam_getBounds(CompressionParameter);
+    Bounds ZSTD_dParam_getBounds(DecompressionParameter);
 }

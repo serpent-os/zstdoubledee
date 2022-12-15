@@ -4,7 +4,7 @@ import std.stdint;
 
 import zstd.c.symbols;
 import zstd.simple;
-public import zstd.c.typedefs : CompressionParameter, Bounds, ResetDirective;
+public import zstd.c.typedefs : Bounds, CompressionParameter, DecompressionParameter, ResetDirective;
 
 class CompressionContext
 {
@@ -104,4 +104,15 @@ unittest
 {
     const auto bounds = getBounds(CompressionParameter.CompressionLevel);
     assert(bounds.lowerBound < 0);
+}
+
+Bounds getBounds(DecompressionParameter dp)
+{
+    return ZSTD_dParam_getBounds(dp);
+}
+
+unittest
+{
+    const auto bounds = getBounds(DecompressionParameter.WindowLogMax);
+    assert(bounds.lowerBound > 0);
 }

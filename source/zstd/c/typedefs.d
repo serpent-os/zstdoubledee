@@ -76,4 +76,14 @@ extern (C)
         Parameters = 2,
         SessionAndParameters = 3
     }
+
+    enum DecompressionParameter
+    {
+        WindowLogMax = 100,
+
+        ExperimentalParam1 = 1000,
+        ExperimentalParam2 = 1001,
+        ExperimentalParam3 = 1002,
+        ExperimentalParam4 = 1003
+    }
 }
