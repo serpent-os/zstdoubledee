@@ -26,4 +26,10 @@ extern (C) @nogc nothrow
     ZSTD_CCtx* ZSTD_createCCtx();
     void ZSTD_freeCCtx(ZSTD_CCtx* cctx);
     size_t ZSTD_compressCCtx(ZSTD_CCtx* cctx, void* dst, size_t dstCap, const void* src, size_t srcSize, int compLvl);
+
+    struct ZSTD_DCtx_s;
+    alias ZSTD_DCtx = ZSTD_DCtx_s;
+    ZSTD_DCtx* ZSTD_createDCtx();
+    size_t ZSTD_freeDCtx(ZSTD_DCtx* dctx);
+    size_t ZSTD_decompressDCtx(ZSTD_DCtx* dctx, void* dst, size_t dstCapacity, const void* src, size_t srcSize);
 }
