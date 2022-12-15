@@ -100,6 +100,15 @@ class DecompressionContext
         }
     }
 
+    void reset(ResetDirective directive)
+    {
+        const auto errCode = ZSTD_DCtx_reset(ptr, directive);
+        if (ZSTD_isError(errCode))
+        {
+            throw new ZSTDException(errCode);
+        }
+    }
+
 private:
     ZSTD_DCtx* ptr;
 }
