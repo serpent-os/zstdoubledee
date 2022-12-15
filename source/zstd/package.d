@@ -1,5 +1,4 @@
 module zstd;
 
-public import zstd.compcontext;
-public import zstd.core;
-public import zstd.decompcontext;
+public import zstd.context;
+public import zstd.simple;

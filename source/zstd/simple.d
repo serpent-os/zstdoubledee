@@ -1,4 +1,4 @@
-module zstd.core;
+module zstd.simple;
 
 import std.format;
 import std.stdint;
