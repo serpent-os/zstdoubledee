@@ -4,7 +4,13 @@ import std.stdint;
 
 import zstd.c.symbols;
 import zstd.simple;
-public import zstd.c.typedefs : Bounds, CompressionParameter, DecompressionParameter, ResetDirective;
+public import zstd.c.typedefs : Bounds,
+    CompressionParameter,
+    DecompressionParameter,
+    EndDirective,
+    InBuffer,
+    OutBuffer,
+    ResetDirective;
 
 class CompressionContext
 {
@@ -38,6 +44,16 @@ class CompressionContext
         return size;
     }
 
+    size_t compressStream(OutBuffer* output, InBuffer* input, EndDirective endOp)
+    {
+        const auto remain = ZSTD_compressStream2(ptr, output, input, endOp);
+        if (ZSTD_isError(remain))
+        {
+            throw new ZSTDException(remain);
+        }
+        return remain;
+    }
+
     void setParameter(CompressionParameter param, int value)
     {
         const auto errCode = ZSTD_CCtx_setParameter(ptr, param, value);
@@ -68,6 +84,8 @@ class CompressionContext
 private:
     ZSTD_CCtx* ptr;
 }
+
+alias CompressionStream = CompressionContext;
 
 class DecompressionContext
 {

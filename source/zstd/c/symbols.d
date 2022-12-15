@@ -25,10 +25,12 @@ extern (C) @nogc nothrow
 
     struct ZSTD_CCtx_s;
     alias ZSTD_CCtx = ZSTD_CCtx_s;
+    alias ZSTD_CStream = ZSTD_CCtx;
     ZSTD_CCtx* ZSTD_createCCtx();
     void ZSTD_freeCCtx(ZSTD_CCtx* cctx);
     size_t ZSTD_compressCCtx(ZSTD_CCtx* cctx, void* dst, size_t dstCap, const void* src, size_t srcSize, int compLvl);
     size_t ZSTD_compress2(ZSTD_CCtx* cctx, void* dst, size_t dstCapacity, void* src, size_t srcSize);
+    size_t ZSTD_compressStream2(ZSTD_CCtx* cctx, OutBuffer* output, InBuffer* input, EndDirective endOp);
     size_t ZSTD_CCtx_setParameter(ZSTD_CCtx* cctx, CompressionParameter param, int value);
     size_t ZSTD_CCtx_setPledgedSrcSize(ZSTD_CCtx* cctx, uint64_t pledgedSrcSize);
     size_t ZSTD_CCtx_reset(ZSTD_CCtx* cctx, ResetDirective reset);

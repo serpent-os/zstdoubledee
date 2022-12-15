@@ -86,4 +86,25 @@ extern (C)
         ExperimentalParam3 = 1002,
         ExperimentalParam4 = 1003
     }
+
+    struct InBuffer
+    {
+        const void* src;
+        size_t size;
+        size_t pos;
+    }
+
+    struct OutBuffer
+    {
+        void* dst;
+        size_t size;
+        size_t pos;
+    }
+
+    enum EndDirective
+    {
+        Continue = 0,
+        Flush = 1,
+        End = 2,
+    }
 }
