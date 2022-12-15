@@ -69,4 +69,11 @@ extern (C)
         int32_t lowerBound;
         int32_t upperBound;
     }
+
+    enum ResetDirective
+    {
+        Session_only = 1,
+        Parameters = 2,
+        SessionAndParameters = 3
+    }
 }

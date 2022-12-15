@@ -4,7 +4,7 @@ import std.stdint;
 
 import zstd.c.symbols;
 import zstd.simple;
-public import zstd.c.typedefs : Strategy, CompressionParameter, Bounds;
+public import zstd.c.typedefs : CompressionParameter, Bounds, ResetDirective;
 
 class CompressionContext
 {
@@ -40,6 +40,15 @@ class CompressionContext
     void setPledgedSrcSize(uint64_t pledgedSrcSize)
     {
         const auto errCode = ZSTD_CCtx_setPledgedSrcSize(ptr, pledgedSrcSize);
+        if (ZSTD_isError(errCode))
+        {
+            throw new ZSTDException(errCode);
+        }
+    }
+
+    void reset(ResetDirective directive)
+    {
+        const auto errCode = ZSTD_CCtx_reset(ptr, directive);
         if (ZSTD_isError(errCode))
         {
             throw new ZSTDException(errCode);
