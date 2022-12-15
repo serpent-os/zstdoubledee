@@ -120,7 +120,6 @@ private:
 
 uint64_t getFrameContentSize(const void* src, size_t srcSize) @trusted
 {
-    // TODO: exception handling with a proper exception type.
     auto size = ZSTD_getFrameContentSize(src, srcSize);
     if (FrameContentSizeException.isError(size))
     {
