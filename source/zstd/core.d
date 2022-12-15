@@ -148,3 +148,8 @@ size_t findFrameCompressedSize(void* src, size_t srcSize) @trusted
     }
     return size;
 }
+
+size_t compressBound(size_t srcSize) @trusted
+{
+    return ZSTD_compressBound(srcSize);
+}
