@@ -1,5 +1,7 @@
 src_lib = files(
-    'c/package.d',
+    'c/symbols.d',
+    'c/typedefs.d',
+    'advcomp.d',
     'context.d',
     'package.d',
     'simple.d',

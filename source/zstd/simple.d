@@ -4,7 +4,7 @@ import std.format;
 import std.stdint;
 import std.string;
 
-import zstd.c;
+import zstd.c.symbols;
 
 uint32_t versionNumber() @trusted
 {

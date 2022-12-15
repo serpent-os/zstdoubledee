@@ -1,6 +1,8 @@
-module zstd.c;
+module zstd.c.symbols;
 
 import std.stdint;
+
+import zstd.c.typedefs;
 
 extern (C) @nogc nothrow
 {
@@ -32,4 +34,6 @@ extern (C) @nogc nothrow
     ZSTD_DCtx* ZSTD_createDCtx();
     size_t ZSTD_freeDCtx(ZSTD_DCtx* dctx);
     size_t ZSTD_decompressDCtx(ZSTD_DCtx* dctx, void* dst, size_t dstCapacity, const void* src, size_t srcSize);
+
+    Bounds ZSTD_cParam_getBounds(CompressionParameter);
 }

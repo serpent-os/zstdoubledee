@@ -1,6 +1,6 @@
 module zstd.context;
 
-import zstd.c;
+import zstd.c.symbols;
 import zstd.simple;
 
 class CompressionContext
