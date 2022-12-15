@@ -50,6 +50,12 @@ unittest
 
 class ZSTDException : Exception
 {
+private:
+    this(string msg, string filename = __FILE__, size_t line = __LINE__) @trusted
+    {
+        super(msg, filename, line);
+    }
+
     this(size_t code, string filename = __FILE__, size_t line = __LINE__) @trusted
     {
         auto name = std.string.fromStringz(ZSTD_getErrorName(code));
@@ -77,8 +83,48 @@ size_t decompress(void* dst, size_t dstCapacity, void* src, size_t compressedSiz
     return size;
 }
 
+class FrameContentSizeException : ZSTDException
+{
+private:
+    this(Kind kind, string filename = __FILE__, size_t line = __LINE__) @safe
+    {
+        super(kindToString(kind), filename, line);
+    }
+
+    enum Kind : uint64_t
+    {
+        SizeUnknown = -1,
+        SizeError = -2,
+    }
+
+    static bool isError(uint64_t size) @safe
+    {
+        return size >= Kind.min && size <= Kind.max;
+    }
+
+    static string kindToString(Kind kind) @safe
+    {
+        final switch (kind)
+        {
+        case Kind.SizeUnknown:
+            {
+                return std.format.format("size cannot be determined (code %d)", kind);
+            }
+        case Kind.SizeError:
+            {
+                return std.format.format("one of the arguments is invalid (code %d)", kind);
+            }
+        }
+    }
+}
+
 uint64_t getFrameContentSize(const void* src, size_t srcSize) @trusted
 {
     // TODO: exception handling with a proper exception type.
-    return ZSTD_getFrameContentSize(src, srcSize);
+    auto size = ZSTD_getFrameContentSize(src, srcSize);
+    if (FrameContentSizeException.isError(size))
+    {
+        throw new FrameContentSizeException(cast(FrameContentSizeException.Kind) size);
+    }
+    return size;
 }
