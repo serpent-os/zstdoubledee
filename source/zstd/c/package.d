@@ -20,4 +20,10 @@ extern (C) @nogc nothrow
     size_t ZSTD_compressBound(size_t srcSize);
 
     uint64_t ZSTD_getFrameContentSize(const void* src, size_t srcSize);
+
+    struct ZSTD_CCtx_s;
+    alias ZSTD_CCtx = ZSTD_CCtx_s;
+    ZSTD_CCtx* ZSTD_createCCtx();
+    void ZSTD_freeCCtx(ZSTD_CCtx* cctx);
+    size_t ZSTD_compressCCtx(ZSTD_CCtx* cctx, void* dst, size_t dstCap, const void* src, size_t srcSize, int compLvl);
 }

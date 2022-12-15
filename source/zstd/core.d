@@ -61,7 +61,7 @@ unittest
 
 class ZSTDException : Exception
 {
-private:
+package:
     this(string msg, string filename = __FILE__, size_t line = __LINE__) @trusted
     {
         super(msg, filename, line);

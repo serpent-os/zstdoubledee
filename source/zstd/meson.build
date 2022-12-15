@@ -1,5 +1,6 @@
 src_lib = files(
     'c/package.d',
+    'compcontext.d',
     'core.d',
     'package.d',
 )
