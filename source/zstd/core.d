@@ -38,6 +38,17 @@ unittest
     assert(minCompressionLevel() < 0);
 }
 
+CompressionLevel defaultCompressionLevel() @trusted
+{
+    return ZSTD_defaultCLevel();
+}
+
+unittest
+{
+    const auto lvl = defaultCompressionLevel();
+    assert(lvl >= minCompressionLevel && lvl <= maxCompressionLevel);
+}
+
 CompressionLevel maxCompressionLevel() @trusted
 {
     return ZSTD_maxCLevel();

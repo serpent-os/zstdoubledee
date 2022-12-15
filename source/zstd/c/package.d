@@ -2,12 +2,13 @@ module zstd.c;
 
 import std.stdint;
 
-extern (C)
+extern (C) @nogc nothrow
 {
     uint32_t ZSTD_versionNumber();
     char* ZSTD_versionString();
 
     int32_t ZSTD_minCLevel();
+    int32_t ZSTD_defaultCLevel();
     int32_t ZSTD_maxCLevel();
 
     uint32_t ZSTD_isError(size_t);
@@ -18,5 +19,4 @@ extern (C)
     size_t ZSTD_findFrameCompressedSize(void* src, size_t srcSize);
 
     uint64_t ZSTD_getFrameContentSize(const void* src, size_t srcSize);
-
 }
