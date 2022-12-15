@@ -28,6 +28,16 @@ class CompressionContext
         return size;
     }
 
+    size_t compress(void* dst, size_t dstCapacity, void* src, size_t srcSize)
+    {
+        const auto size = ZSTD_compress2(ptr, dst, dstCapacity, src, srcSize);
+        if (ZSTD_isError(size))
+        {
+            throw new ZSTDException(size);
+        }
+        return size;
+    }
+
     void setParameter(CompressionParameter param, int value)
     {
         const auto errCode = ZSTD_CCtx_setParameter(ptr, param, value);
