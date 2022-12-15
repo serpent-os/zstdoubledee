@@ -65,7 +65,7 @@ private:
 
 size_t compress(void* dst, size_t dstCapacity, void* src, size_t srcSize, CompressionLevel lvl) @trusted
 {
-    auto size = ZSTD_compress(dst, dstCapacity, src, srcSize, lvl);
+    const auto size = ZSTD_compress(dst, dstCapacity, src, srcSize, lvl);
     if (ZSTD_isError(size))
     {
         throw new ZSTDException(size);
@@ -75,7 +75,7 @@ size_t compress(void* dst, size_t dstCapacity, void* src, size_t srcSize, Compre
 
 size_t decompress(void* dst, size_t dstCapacity, void* src, size_t compressedSize) @trusted
 {
-    auto size = ZSTD_decompress(dst, dstCapacity, src, compressedSize);
+    const auto size = ZSTD_decompress(dst, dstCapacity, src, compressedSize);
     if (ZSTD_isError(size))
     {
         throw new ZSTDException(size);
@@ -120,10 +120,20 @@ private:
 
 uint64_t getFrameContentSize(const void* src, size_t srcSize) @trusted
 {
-    auto size = ZSTD_getFrameContentSize(src, srcSize);
+    const auto size = ZSTD_getFrameContentSize(src, srcSize);
     if (FrameContentSizeException.isError(size))
     {
         throw new FrameContentSizeException(cast(FrameContentSizeException.Kind) size);
+    }
+    return size;
+}
+
+size_t findFrameCompressedSize(void* src, size_t srcSize) @trusted
+{
+    const auto size = ZSTD_findFrameCompressedSize(src, srcSize);
+    if (ZSTD_isError(size))
+    {
+        throw new ZSTDException(size);
     }
     return size;
 }
