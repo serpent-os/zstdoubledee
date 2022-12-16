@@ -47,6 +47,16 @@ class CompressionContext
         return size;
     }
 
+    size_t compressUsingDict(void* dst, size_t dstCap, const void* src, size_t srcSize, const void* dict, size_t dictSize, CompressionLevel lvl)
+    {
+        const auto size = ZSTD_compress_usingDict(ptr, dst, dstCap, src, srcSize, dict, dictSize, lvl);
+        if (ZSTD_isError(size))
+        {
+            throw new ZSTDException(size);
+        }
+        return size;
+    }
+
     void setParameter(CompressionParameter param, int value)
     {
         const auto errCode = ZSTD_CCtx_setParameter(ptr, param, value);
@@ -152,6 +162,16 @@ class DecompressionContext
     size_t decompress(void* dst, size_t dstCapacity, const void* src, size_t srcSize)
     {
         const auto size = ZSTD_decompressDCtx(ptr, dst, dstCapacity, src, srcSize);
+        if (ZSTD_isError(size))
+        {
+            throw new ZSTDException(size);
+        }
+        return size;
+    }
+
+    size_t decompressUsingDict(void* dst, size_t dstCap, const void* src, size_t srcSize, const void* dict, size_t dictSize)
+    {
+        const auto size = ZSTD_decompress_usingDict(ptr, dst, dstCap, src, srcSize, dict, dictSize);
         if (ZSTD_isError(size))
         {
             throw new ZSTDException(size);
