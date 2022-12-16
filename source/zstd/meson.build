@@ -4,6 +4,5 @@ src_lib = files(
     'context.d',
     'package.d',
     'simple.d',
-    'stream.d',
 )
 src_include = include_directories('..')

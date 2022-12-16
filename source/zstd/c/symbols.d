@@ -44,13 +44,16 @@ extern (C) @nogc nothrow
     Bounds ZSTD_dParam_getBounds(DecompressionParameter);
 
     alias ZSTD_CStream = ZSTD_CCtx;
-    ZSTD_CStream* ZSTD_createCStream();
-    size_t ZSTD_freeCStream(ZSTD_CStream* zcs);
     size_t ZSTD_initCStream(ZSTD_CStream* zcs, int32_t compressionLevel);
     size_t ZSTD_compressStream(ZSTD_CStream* zcs, OutBuffer* output, InBuffer* input);
-    size_t ZSTD_compressStream2(ZSTD_CCtx* cctx, OutBuffer* output, InBuffer* input, EndDirective endOp);
+    size_t ZSTD_compressStream2(ZSTD_CStream* cctx, OutBuffer* output, InBuffer* input, EndDirective endOp);
     size_t ZSTD_flushStream(ZSTD_CStream* zcs, OutBuffer* output);
     size_t ZSTD_endStream(ZSTD_CStream* zcs, OutBuffer* output);
     size_t ZSTD_CStreamInSize();
     size_t ZSTD_CStreamOutSize();
+
+    alias ZSTD_DStream = ZSTD_DCtx;
+    size_t ZSTD_DStreamInSize();
+    size_t ZSTD_DStreamOutSize();
+
 }

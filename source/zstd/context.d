@@ -12,6 +12,9 @@ public import zstd.c.typedefs : Bounds,
     OutBuffer,
     ResetDirective;
 
+public alias CompressionStream = CompressionContext;
+public alias DecompressionStream = DecompressionContext;
+
 class CompressionContext
 {
     this()
@@ -62,6 +65,65 @@ class CompressionContext
         }
     }
 
+    void streamInit(CompressionLevel lvl)
+    {
+        const auto errcode = ZSTD_initCStream(ptr, lvl);
+        if (ZSTD_isError(errcode))
+        {
+            throw new ZSTDException(errcode);
+        }
+    }
+
+    size_t streamCompress(OutBuffer* output, InBuffer* input)
+    {
+        const auto size = ZSTD_compressStream(ptr, output, input);
+        if (ZSTD_isError(size))
+        {
+            throw new ZSTDException(size);
+        }
+        return size;
+    }
+
+    size_t streamCompress(OutBuffer* output, InBuffer* input, EndDirective endOp)
+    {
+        const auto remain = ZSTD_compressStream2(ptr, output, input, endOp);
+        if (ZSTD_isError(remain))
+        {
+            throw new ZSTDException(remain);
+        }
+        return remain;
+    }
+
+    size_t streamFlush(OutBuffer* output)
+    {
+        const auto size = ZSTD_flushStream(ptr, output);
+        if (ZSTD_isError(size))
+        {
+            throw new ZSTDException(size);
+        }
+        return size;
+    }
+
+    size_t streamEnd(OutBuffer* output)
+    {
+        const auto size = ZSTD_endStream(ptr, output);
+        if (ZSTD_isError(size))
+        {
+            throw new ZSTDException(size);
+        }
+        return size;
+    }
+
+    static size_t streamInSize()
+    {
+        return ZSTD_CStreamInSize();
+    }
+
+    static size_t streamOutSize()
+    {
+        return ZSTD_CStreamOutSize();
+    }
+
     void reset(ResetDirective directive)
     {
         const auto errCode = ZSTD_CCtx_reset(ptr, directive);
@@ -74,8 +136,6 @@ class CompressionContext
 private:
     ZSTD_CCtx* ptr;
 }
-
-alias CompressionStream = CompressionContext;
 
 class DecompressionContext
 {
@@ -106,6 +166,16 @@ class DecompressionContext
         {
             throw new ZSTDException(errCode);
         }
+    }
+
+    static size_t streamInSize()
+    {
+        return ZSTD_DStreamInSize();
+    }
+
+    size_t streamOutSize()
+    {
+        return ZSTD_DStreamOutSize();
     }
 
     void reset(ResetDirective directive)
