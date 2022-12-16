@@ -248,6 +248,33 @@ class DecompressionContext
         return size;
     }
 
+    void loadDictionary(const void* dict, size_t dictSize)
+    {
+        const auto errCode = ZSTD_DCtx_loadDictionary(ptr, dict, dictSize);
+        if (ZSTD_isError(errCode))
+        {
+            throw new ZSTDException(errCode);
+        }
+    }
+
+    void refDict(const DecompressionDict dict)
+    {
+        const auto errCode = ZSTD_DCtx_refDDict(ptr, dict.ptr);
+        if (ZSTD_isError(errCode))
+        {
+            throw new ZSTDException(errCode);
+        }
+    }
+
+    void refPrefix(const void* prefix, size_t prefixSize)
+    {
+        const auto errCode = ZSTD_DCtx_refPrefix(ptr, prefix, prefixSize);
+        if (ZSTD_isError(errCode))
+        {
+            throw new ZSTDException(errCode);
+        }
+    }
+
     void setParameter(DecompressionParameter param, int value)
     {
         const auto errCode = ZSTD_DCtx_setParameter(ptr, param, value);

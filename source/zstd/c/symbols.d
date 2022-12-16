@@ -72,6 +72,9 @@ extern (C) @nogc nothrow
         const void* src,
         size_t srcSize,
         const ZSTD_DDict* ddict);
+    size_t ZSTD_DCtx_loadDictionary(ZSTD_DCtx* dctx, const void* dict, size_t dictSize);
+    size_t ZSTD_DCtx_refDDict(ZSTD_DCtx* dctx, const ZSTD_DDict* ddict);
+    size_t ZSTD_DCtx_refPrefix(ZSTD_DCtx* dctx, const void* prefix, size_t prefixSize);
     size_t ZSTD_DCtx_setParameter(ZSTD_DCtx* dctx, DecompressionParameter param, int32_t value);
     size_t ZSTD_DCtx_reset(ZSTD_DCtx* dctx, ResetDirective reset);
     Bounds ZSTD_dParam_getBounds(DecompressionParameter);
