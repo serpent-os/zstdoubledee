@@ -49,6 +49,7 @@ extern (C) @nogc nothrow
     size_t ZSTD_CCtx_refPrefix(ZSTD_CCtx* cctx, const void* prefix, size_t prefixSize);
     size_t ZSTD_CCtx_setParameter(ZSTD_CCtx* cctx, CompressionParameter param, int32_t value);
     size_t ZSTD_CCtx_setPledgedSrcSize(ZSTD_CCtx* cctx, uint64_t pledgedSrcSize);
+    size_t ZSTD_sizeof_CCtx(const ZSTD_CCtx* cctx);
     size_t ZSTD_CCtx_reset(ZSTD_CCtx* cctx, ResetDirective reset);
     Bounds ZSTD_cParam_getBounds(CompressionParameter);
 
@@ -76,6 +77,7 @@ extern (C) @nogc nothrow
     size_t ZSTD_DCtx_refDDict(ZSTD_DCtx* dctx, const ZSTD_DDict* ddict);
     size_t ZSTD_DCtx_refPrefix(ZSTD_DCtx* dctx, const void* prefix, size_t prefixSize);
     size_t ZSTD_DCtx_setParameter(ZSTD_DCtx* dctx, DecompressionParameter param, int32_t value);
+    size_t ZSTD_sizeof_DCtx(const ZSTD_DCtx* dctx);
     size_t ZSTD_DCtx_reset(ZSTD_DCtx* dctx, ResetDirective reset);
     Bounds ZSTD_dParam_getBounds(DecompressionParameter);
 
@@ -97,12 +99,14 @@ extern (C) @nogc nothrow
     ZSTD_CDict* ZSTD_createCDict(const void* dictBuffer, size_t dictSize, int compressionLevel);
     size_t ZSTD_freeCDict(ZSTD_CDict* CDict);
     uint32_t ZSTD_getDictID_fromCDict(const ZSTD_CDict* cdict);
+    size_t ZSTD_sizeof_CDict(const ZSTD_CDict* cdict);
 
     struct ZSTD_DDict_s;
     alias ZSTD_DDict = ZSTD_DDict_s;
     ZSTD_DDict* ZSTD_createDDict(const void* dictBuffer, size_t dictSize);
     size_t ZSTD_freeDDict(ZSTD_DDict* ddict);
     uint32_t ZSTD_getDictID_fromDDict(const ZSTD_DDict* ddict);
+    size_t ZSTD_sizeof_DDict(const ZSTD_DDict* ddict);
 
     uint32_t ZSTD_getDictID_fromDict(const void* dict, size_t dictSize);
     uint32_t ZSTD_getDictID_fromFrame(const void* src, size_t srcSize);

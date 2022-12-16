@@ -184,6 +184,11 @@ class CompressionContext
         return ZSTD_CStreamOutSize();
     }
 
+    size_t sizeOf()
+    {
+        return ZSTD_sizeof_CCtx(ptr);
+    }
+
     void reset(ResetDirective directive)
     {
         const auto errCode = ZSTD_CCtx_reset(ptr, directive);
@@ -292,6 +297,11 @@ class DecompressionContext
     size_t streamOutSize()
     {
         return ZSTD_DStreamOutSize();
+    }
+
+    size_t sizeOf()
+    {
+        return ZSTD_sizeof_DCtx(ptr);
     }
 
     void reset(ResetDirective directive)

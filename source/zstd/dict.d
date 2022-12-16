@@ -32,6 +32,11 @@ class CompressionDict
         return ZSTD_getDictID_fromCDict(ptr);
     }
 
+    size_t sizeOf()
+    {
+        return ZSTD_sizeof_CDict(ptr);
+    }
+
 package:
     ZSTD_CDict* ptr;
 }
@@ -51,6 +56,11 @@ class DecompressionDict
     uint32_t getDictID()
     {
         return ZSTD_getDictID_fromDDict(ptr);
+    }
+
+    size_t sizeOf()
+    {
+        return ZSTD_sizeof_DDict(ptr);
     }
 
 package:
