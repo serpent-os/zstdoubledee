@@ -17,8 +17,8 @@ extern (C) @nogc nothrow
     char* ZSTD_getErrorName(size_t);
 
     size_t ZSTD_compress(void* dst, size_t dstCapacity, const void* src, size_t srcSize, int32_t compressionLevel);
-    size_t ZSTD_decompress(void* dst, size_t dstCapacity, void* src, size_t compressedSize);
-    size_t ZSTD_findFrameCompressedSize(void* src, size_t srcSize);
+    size_t ZSTD_decompress(void* dst, size_t dstCapacity, const void* src, size_t compressedSize);
+    size_t ZSTD_findFrameCompressedSize(const void* src, size_t srcSize);
     size_t ZSTD_compressBound(size_t srcSize);
 
     uint64_t ZSTD_getFrameContentSize(const void* src, size_t srcSize);
@@ -28,7 +28,7 @@ extern (C) @nogc nothrow
     ZSTD_CCtx* ZSTD_createCCtx();
     void ZSTD_freeCCtx(ZSTD_CCtx* cctx);
     size_t ZSTD_compressCCtx(ZSTD_CCtx* cctx, void* dst, size_t dstCap, const void* src, size_t srcSize, int32_t compLvl);
-    size_t ZSTD_compress2(ZSTD_CCtx* cctx, void* dst, size_t dstCapacity, void* src, size_t srcSize);
+    size_t ZSTD_compress2(ZSTD_CCtx* cctx, void* dst, size_t dstCapacity, const void* src, size_t srcSize);
     size_t ZSTD_compress_usingDict(
         ZSTD_CCtx* ctx,
         void* dst,
