@@ -80,6 +80,33 @@ class CompressionContext
         return size;
     }
 
+    void loadDictionary(const void* dict, size_t dictSize)
+    {
+        const auto errCode = ZSTD_CCtx_loadDictionary(ptr, dict, dictSize);
+        if (ZSTD_isError(errCode))
+        {
+            throw new ZSTDException(errCode);
+        }
+    }
+
+    void refDict(const CompressionDict dict)
+    {
+        const auto errCode = ZSTD_CCtx_refCDict(ptr, dict.ptr);
+        if (ZSTD_isError(errCode))
+        {
+            throw new ZSTDException(errCode);
+        }
+    }
+
+    void refPrefix(const void* prefix, size_t prefixSize)
+    {
+        const auto errCode = ZSTD_CCtx_refPrefix(ptr, prefix, prefixSize);
+        if (ZSTD_isError(errCode))
+        {
+            throw new ZSTDException(errCode);
+        }
+    }
+
     void setParameter(CompressionParameter param, int value)
     {
         const auto errCode = ZSTD_CCtx_setParameter(ptr, param, value);

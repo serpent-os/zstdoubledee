@@ -44,6 +44,9 @@ extern (C) @nogc nothrow
         const void* src,
         size_t srcSize,
         const ZSTD_CDict* cdict);
+    size_t ZSTD_CCtx_loadDictionary(ZSTD_CCtx* cctx, const void* dict, size_t dictSize);
+    size_t ZSTD_CCtx_refCDict(ZSTD_CCtx* cctx, const ZSTD_CDict* cdict);
+    size_t ZSTD_CCtx_refPrefix(ZSTD_CCtx* cctx, const void* prefix, size_t prefixSize);
     size_t ZSTD_CCtx_setParameter(ZSTD_CCtx* cctx, CompressionParameter param, int32_t value);
     size_t ZSTD_CCtx_setPledgedSrcSize(ZSTD_CCtx* cctx, uint64_t pledgedSrcSize);
     size_t ZSTD_CCtx_reset(ZSTD_CCtx* cctx, ResetDirective reset);
