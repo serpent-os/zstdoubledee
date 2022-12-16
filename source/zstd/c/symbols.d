@@ -90,9 +90,14 @@ extern (C) @nogc nothrow
     alias ZSTD_CDict = ZSTD_CDict_s;
     ZSTD_CDict* ZSTD_createCDict(const void* dictBuffer, size_t dictSize, int compressionLevel);
     size_t ZSTD_freeCDict(ZSTD_CDict* CDict);
+    uint32_t ZSTD_getDictID_fromCDict(const ZSTD_CDict* cdict);
 
     struct ZSTD_DDict_s;
     alias ZSTD_DDict = ZSTD_DDict_s;
     ZSTD_DDict* ZSTD_createDDict(const void* dictBuffer, size_t dictSize);
     size_t ZSTD_freeDDict(ZSTD_DDict* ddict);
+    uint32_t ZSTD_getDictID_fromDDict(const ZSTD_DDict* ddict);
+
+    uint32_t ZSTD_getDictID_fromDict(const void* dict, size_t dictSize);
+    uint32_t ZSTD_getDictID_fromFrame(const void* src, size_t srcSize);
 }
