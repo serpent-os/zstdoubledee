@@ -29,7 +29,21 @@ extern (C) @nogc nothrow
     void ZSTD_freeCCtx(ZSTD_CCtx* cctx);
     size_t ZSTD_compressCCtx(ZSTD_CCtx* cctx, void* dst, size_t dstCap, const void* src, size_t srcSize, int32_t compLvl);
     size_t ZSTD_compress2(ZSTD_CCtx* cctx, void* dst, size_t dstCapacity, void* src, size_t srcSize);
-    size_t ZSTD_compress_usingDict(ZSTD_CCtx* ctx, void* dst, size_t dstCap, const void* src, size_t srcSize, const void* dict, size_t dictSize, int32_t compLvl);
+    size_t ZSTD_compress_usingDict(
+        ZSTD_CCtx* ctx,
+        void* dst,
+        size_t dstCap,
+        const void* src,
+        size_t srcSize,
+        const void* dict,
+        size_t dictSize, int32_t compLvl);
+    size_t ZSTD_compress_usingCDict(
+        ZSTD_CCtx* cctx,
+        void* dst,
+        size_t dstCapacity,
+        const void* src,
+        size_t srcSize,
+        const ZSTD_CDict* cdict);
     size_t ZSTD_CCtx_setParameter(ZSTD_CCtx* cctx, CompressionParameter param, int32_t value);
     size_t ZSTD_CCtx_setPledgedSrcSize(ZSTD_CCtx* cctx, uint64_t pledgedSrcSize);
     size_t ZSTD_CCtx_reset(ZSTD_CCtx* cctx, ResetDirective reset);
@@ -40,7 +54,14 @@ extern (C) @nogc nothrow
     ZSTD_DCtx* ZSTD_createDCtx();
     size_t ZSTD_freeDCtx(ZSTD_DCtx* dctx);
     size_t ZSTD_decompressDCtx(ZSTD_DCtx* dctx, void* dst, size_t dstCapacity, const void* src, size_t srcSize);
-    size_t ZSTD_decompress_usingDict(ZSTD_DCtx* dctx, void* dst, size_t dstCap, const void* src, size_t srcSize, const void* dict, size_t dictSize);
+    size_t ZSTD_decompress_usingDict(
+        ZSTD_DCtx* dctx,
+        void* dst,
+        size_t dstCap,
+        const void* src,
+        size_t srcSize,
+        const void* dict,
+        size_t dictSize);
     size_t ZSTD_DCtx_setParameter(ZSTD_DCtx* dctx, DecompressionParameter param, int32_t value);
     size_t ZSTD_DCtx_reset(ZSTD_DCtx* dctx, ResetDirective reset);
     Bounds ZSTD_dParam_getBounds(DecompressionParameter);

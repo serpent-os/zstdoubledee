@@ -4,6 +4,7 @@ import std.stdint;
 
 import zstd.c.symbols;
 import zstd.simple;
+import zstd.dict;
 public import zstd.c.typedefs : Bounds,
     CompressionParameter,
     DecompressionParameter,
@@ -47,9 +48,31 @@ class CompressionContext
         return size;
     }
 
-    size_t compressUsingDict(void* dst, size_t dstCap, const void* src, size_t srcSize, const void* dict, size_t dictSize, CompressionLevel lvl)
+    size_t compressUsingDict(
+        void* dst,
+        size_t dstCap,
+        const void* src,
+        size_t srcSize,
+        const void* dict,
+        size_t dictSize,
+        CompressionLevel lvl)
     {
         const auto size = ZSTD_compress_usingDict(ptr, dst, dstCap, src, srcSize, dict, dictSize, lvl);
+        if (ZSTD_isError(size))
+        {
+            throw new ZSTDException(size);
+        }
+        return size;
+    }
+
+    size_t compressUsingDict(
+        void* dst,
+        size_t dstCapacity,
+        const void* src,
+        size_t srcSize,
+        const CompressionDict cdict)
+    {
+        const auto size = ZSTD_compress_usingCDict(ptr, dst, dstCapacity, src, srcSize, cdict.ptr);
         if (ZSTD_isError(size))
         {
             throw new ZSTDException(size);
