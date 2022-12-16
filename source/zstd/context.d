@@ -3,8 +3,6 @@ module zstd.context;
 import std.stdint;
 
 import zstd.c.symbols;
-import zstd.simple;
-import zstd.dict;
 public import zstd.c.typedefs : Bounds,
     CompressionParameter,
     DecompressionParameter,
@@ -12,6 +10,8 @@ public import zstd.c.typedefs : Bounds,
     InBuffer,
     OutBuffer,
     ResetDirective;
+import zstd.common;
+import zstd.dict;
 
 public alias CompressionStream = CompressionContext;
 public alias DecompressionStream = DecompressionContext;
@@ -31,20 +31,14 @@ class CompressionContext
     size_t compress(void* dst, size_t dstCapacity, void* src, size_t srcSize, CompressionLevel lvl)
     {
         const auto size = ZSTD_compressCCtx(ptr, dst, dstCapacity, src, srcSize, lvl);
-        if (ZSTD_isError(size))
-        {
-            throw new ZSTDException(size);
-        }
+        ZSTDException.raiseIfError(size);
         return size;
     }
 
     size_t compress(void* dst, size_t dstCapacity, void* src, size_t srcSize)
     {
         const auto size = ZSTD_compress2(ptr, dst, dstCapacity, src, srcSize);
-        if (ZSTD_isError(size))
-        {
-            throw new ZSTDException(size);
-        }
+        ZSTDException.raiseIfError(size);
         return size;
     }
 
@@ -58,10 +52,7 @@ class CompressionContext
         CompressionLevel lvl)
     {
         const auto size = ZSTD_compress_usingDict(ptr, dst, dstCap, src, srcSize, dict, dictSize, lvl);
-        if (ZSTD_isError(size))
-        {
-            throw new ZSTDException(size);
-        }
+        ZSTDException.raiseIfError(size);
         return size;
     }
 
@@ -73,104 +64,71 @@ class CompressionContext
         const CompressionDict cdict)
     {
         const auto size = ZSTD_compress_usingCDict(ptr, dst, dstCapacity, src, srcSize, cdict.ptr);
-        if (ZSTD_isError(size))
-        {
-            throw new ZSTDException(size);
-        }
+        ZSTDException.raiseIfError(size);
         return size;
     }
 
     void loadDictionary(const void* dict, size_t dictSize)
     {
         const auto errCode = ZSTD_CCtx_loadDictionary(ptr, dict, dictSize);
-        if (ZSTD_isError(errCode))
-        {
-            throw new ZSTDException(errCode);
-        }
+        ZSTDException.raiseIfError(errCode);
     }
 
     void refDict(const CompressionDict dict)
     {
         const auto errCode = ZSTD_CCtx_refCDict(ptr, dict.ptr);
-        if (ZSTD_isError(errCode))
-        {
-            throw new ZSTDException(errCode);
-        }
+        ZSTDException.raiseIfError(errCode);
     }
 
     void refPrefix(const void* prefix, size_t prefixSize)
     {
         const auto errCode = ZSTD_CCtx_refPrefix(ptr, prefix, prefixSize);
-        if (ZSTD_isError(errCode))
-        {
-            throw new ZSTDException(errCode);
-        }
+        ZSTDException.raiseIfError(errCode);
     }
 
     void setParameter(CompressionParameter param, int value)
     {
         const auto errCode = ZSTD_CCtx_setParameter(ptr, param, value);
-        if (ZSTD_isError(errCode))
-        {
-            throw new ZSTDException(errCode);
-        }
+        ZSTDException.raiseIfError(errCode);
     }
 
     void setPledgedSrcSize(uint64_t pledgedSrcSize)
     {
         const auto errCode = ZSTD_CCtx_setPledgedSrcSize(ptr, pledgedSrcSize);
-        if (ZSTD_isError(errCode))
-        {
-            throw new ZSTDException(errCode);
-        }
+        ZSTDException.raiseIfError(errCode);
     }
 
     void streamInit(CompressionLevel lvl)
     {
         const auto errcode = ZSTD_initCStream(ptr, lvl);
-        if (ZSTD_isError(errcode))
-        {
-            throw new ZSTDException(errcode);
-        }
+        ZSTDException.raiseIfError(errcode);
     }
 
     size_t streamCompress(OutBuffer* output, InBuffer* input)
     {
         const auto size = ZSTD_compressStream(ptr, output, input);
-        if (ZSTD_isError(size))
-        {
-            throw new ZSTDException(size);
-        }
+        ZSTDException.raiseIfError(size);
         return size;
     }
 
     size_t streamCompress(OutBuffer* output, InBuffer* input, EndDirective endOp)
     {
         const auto remain = ZSTD_compressStream2(ptr, output, input, endOp);
-        if (ZSTD_isError(remain))
-        {
-            throw new ZSTDException(remain);
-        }
+        ZSTDException.raiseIfError(remain);
         return remain;
     }
 
     size_t streamFlush(OutBuffer* output)
     {
         const auto size = ZSTD_flushStream(ptr, output);
-        if (ZSTD_isError(size))
-        {
-            throw new ZSTDException(size);
-        }
+        ZSTDException.raiseIfError(size);
         return size;
     }
 
     size_t streamEnd(OutBuffer* output)
     {
         const auto size = ZSTD_endStream(ptr, output);
-        if (ZSTD_isError(size))
-        {
-            throw new ZSTDException(size);
-        }
+        ZSTDException.raiseIfError(size);
         return size;
     }
 
@@ -192,10 +150,7 @@ class CompressionContext
     void reset(ResetDirective directive)
     {
         const auto errCode = ZSTD_CCtx_reset(ptr, directive);
-        if (ZSTD_isError(errCode))
-        {
-            throw new ZSTDException(errCode);
-        }
+        ZSTDException.raiseIfError(errCode);
     }
 
 private:
@@ -217,10 +172,7 @@ class DecompressionContext
     size_t decompress(void* dst, size_t dstCapacity, const void* src, size_t srcSize)
     {
         const auto size = ZSTD_decompressDCtx(ptr, dst, dstCapacity, src, srcSize);
-        if (ZSTD_isError(size))
-        {
-            throw new ZSTDException(size);
-        }
+        ZSTDException.raiseIfError(size);
         return size;
     }
 
@@ -233,10 +185,7 @@ class DecompressionContext
         size_t dictSize)
     {
         const auto size = ZSTD_decompress_usingDict(ptr, dst, dstCap, src, srcSize, dict, dictSize);
-        if (ZSTD_isError(size))
-        {
-            throw new ZSTDException(size);
-        }
+        ZSTDException.raiseIfError(size);
         return size;
     }
 
@@ -246,47 +195,32 @@ class DecompressionContext
         const DecompressionDict ddict)
     {
         const auto size = ZSTD_decompress_usingDDict(ptr, dst, dstCapacity, src, srcSize, ddict.ptr);
-        if (ZSTD_isError(size))
-        {
-            throw new ZSTDException(size);
-        }
+        ZSTDException.raiseIfError(size);
         return size;
     }
 
     void loadDictionary(const void* dict, size_t dictSize)
     {
         const auto errCode = ZSTD_DCtx_loadDictionary(ptr, dict, dictSize);
-        if (ZSTD_isError(errCode))
-        {
-            throw new ZSTDException(errCode);
-        }
+        ZSTDException.raiseIfError(errCode);
     }
 
     void refDict(const DecompressionDict dict)
     {
         const auto errCode = ZSTD_DCtx_refDDict(ptr, dict.ptr);
-        if (ZSTD_isError(errCode))
-        {
-            throw new ZSTDException(errCode);
-        }
+        ZSTDException.raiseIfError(errCode);
     }
 
     void refPrefix(const void* prefix, size_t prefixSize)
     {
         const auto errCode = ZSTD_DCtx_refPrefix(ptr, prefix, prefixSize);
-        if (ZSTD_isError(errCode))
-        {
-            throw new ZSTDException(errCode);
-        }
+        ZSTDException.raiseIfError(errCode);
     }
 
     void setParameter(DecompressionParameter param, int value)
     {
         const auto errCode = ZSTD_DCtx_setParameter(ptr, param, value);
-        if (ZSTD_isError(errCode))
-        {
-            throw new ZSTDException(errCode);
-        }
+        ZSTDException.raiseIfError(errCode);
     }
 
     static size_t streamInSize()
@@ -307,10 +241,7 @@ class DecompressionContext
     void reset(ResetDirective directive)
     {
         const auto errCode = ZSTD_DCtx_reset(ptr, directive);
-        if (ZSTD_isError(errCode))
-        {
-            throw new ZSTDException(errCode);
-        }
+        ZSTDException.raiseIfError(errCode);
     }
 
 private:
