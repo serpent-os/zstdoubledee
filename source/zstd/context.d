@@ -192,9 +192,28 @@ class DecompressionContext
         return size;
     }
 
-    size_t decompressUsingDict(void* dst, size_t dstCap, const void* src, size_t srcSize, const void* dict, size_t dictSize)
+    size_t decompressUsingDict(
+        void* dst,
+        size_t dstCap,
+        const void* src,
+        size_t srcSize,
+        const void* dict,
+        size_t dictSize)
     {
         const auto size = ZSTD_decompress_usingDict(ptr, dst, dstCap, src, srcSize, dict, dictSize);
+        if (ZSTD_isError(size))
+        {
+            throw new ZSTDException(size);
+        }
+        return size;
+    }
+
+    size_t decompressUsingDict(
+        void* dst, size_t dstCapacity,
+        const void* src, size_t srcSize,
+        const DecompressionDict ddict)
+    {
+        const auto size = ZSTD_decompress_usingDDict(ptr, dst, dstCapacity, src, srcSize, ddict.ptr);
         if (ZSTD_isError(size))
         {
             throw new ZSTDException(size);

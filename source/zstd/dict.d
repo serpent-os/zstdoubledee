@@ -15,6 +15,22 @@ class CompressionDict
         ZSTD_freeCDict(ptr);
     }
 
-private:
+package:
     ZSTD_CDict* ptr;
+}
+
+class DecompressionDict
+{
+    this(const void* dictBuffer, size_t dictSize)
+    {
+        ptr = ZSTD_createDDict(dictBuffer, dictSize);
+    }
+
+    ~this()
+    {
+        ZSTD_freeDDict(ptr);
+    }
+
+package:
+    ZSTD_DDict* ptr;
 }

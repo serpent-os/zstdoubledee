@@ -62,6 +62,13 @@ extern (C) @nogc nothrow
         size_t srcSize,
         const void* dict,
         size_t dictSize);
+    size_t ZSTD_decompress_usingDDict(
+        ZSTD_DCtx* dctx,
+        void* dst,
+        size_t dstCapacity,
+        const void* src,
+        size_t srcSize,
+        const ZSTD_DDict* ddict);
     size_t ZSTD_DCtx_setParameter(ZSTD_DCtx* dctx, DecompressionParameter param, int32_t value);
     size_t ZSTD_DCtx_reset(ZSTD_DCtx* dctx, ResetDirective reset);
     Bounds ZSTD_dParam_getBounds(DecompressionParameter);
@@ -83,4 +90,9 @@ extern (C) @nogc nothrow
     alias ZSTD_CDict = ZSTD_CDict_s;
     ZSTD_CDict* ZSTD_createCDict(const void* dictBuffer, size_t dictSize, int compressionLevel);
     size_t ZSTD_freeCDict(ZSTD_CDict* CDict);
+
+    struct ZSTD_DDict_s;
+    alias ZSTD_DDict = ZSTD_DDict_s;
+    ZSTD_DDict* ZSTD_createDDict(const void* dictBuffer, size_t dictSize);
+    size_t ZSTD_freeDDict(ZSTD_DDict* ddict);
 }
