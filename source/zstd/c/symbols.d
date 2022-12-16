@@ -110,4 +110,7 @@ extern (C) @nogc nothrow
 
     uint32_t ZSTD_getDictID_fromDict(const void* dict, size_t dictSize);
     uint32_t ZSTD_getDictID_fromFrame(const void* src, size_t srcSize);
+
+    uint32_t ZSTD_isSkippableFrame(const void* buffer, size_t size);
+    size_t ZSTD_readSkippableFrame(void* dst, size_t dstCap, uint32_t* magicVariant, const void* src, size_t srcSize);
 }

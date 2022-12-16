@@ -138,3 +138,15 @@ uint32_t getDictIDFromFrame(const void* src, size_t srcSize)
 {
     return ZSTD_getDictID_fromFrame(src, srcSize);
 }
+
+bool isSkippableFrame(const void* buffer, size_t size)
+{
+    return cast(bool) ZSTD_isSkippableFrame(buffer, size);
+}
+
+size_t readSkippableFrame(void* dst, size_t dstCap, uint32_t* magicVariant, const void* src, size_t srcSize)
+{
+    const auto nBytes = ZSTD_readSkippableFrame(dst, dstCap, magicVariant, src, srcSize);
+    ZSTDException.raiseIfError(nBytes);
+    return nBytes;
+}
