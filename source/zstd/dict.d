@@ -9,7 +9,7 @@ class CompressionDict
 {
     this(const void[] dictBuffer, CompressionLevel lvl)
     {
-        ptr = ZSTD_createCDict(cast(const void*) dictBuffer, dictBuffer.length, lvl);
+        ptr = ZSTD_createCDict(dictBuffer.ptr, dictBuffer.length, lvl);
     }
 
     ~this()
@@ -35,7 +35,7 @@ class DecompressionDict
 {
     this(const void[] dictBuffer)
     {
-        ptr = ZSTD_createDDict(cast(const void*) dictBuffer, dictBuffer.length);
+        ptr = ZSTD_createDDict(dictBuffer.ptr, dictBuffer.length);
     }
 
     ~this()
