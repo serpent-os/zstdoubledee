@@ -61,14 +61,14 @@ unittest
 
 size_t compress(void[] dst, const void[] src, CompressionLevel lvl) @trusted
 {
-    const auto size = ZSTD_compress(cast(void*) dst, dst.length, cast(const void*) src, src.length, lvl);
+    const auto size = ZSTD_compress(dst.ptr, dst.length, src.ptr, src.length, lvl);
     ZSTDException.raiseIfError(size);
     return size;
 }
 
-size_t decompress(void[] dst, const void[] src, size_t compressedSize) @trusted
+size_t decompress(void[] dst, const void[] src) @trusted
 {
-    const auto size = ZSTD_decompress(cast(void*) dst, dst.length, cast(const void*) src, compressedSize);
+    const auto size = ZSTD_decompress(dst.ptr, dst.length, src.ptr, src.length);
     ZSTDException.raiseIfError(size);
     return size;
 }
@@ -110,7 +110,7 @@ private:
 
 uint64_t getFrameContentSize(const void[] src) @trusted
 {
-    const auto size = ZSTD_getFrameContentSize(cast(const void*) src, src.length);
+    const auto size = ZSTD_getFrameContentSize(src.ptr, src.length);
     if (FrameContentSizeException.isError(size))
     {
         throw new FrameContentSizeException(cast(FrameContentSizeException.Kind) size);
@@ -120,7 +120,7 @@ uint64_t getFrameContentSize(const void[] src) @trusted
 
 size_t findFrameCompressedSize(const void[] src) @trusted
 {
-    const auto size = ZSTD_findFrameCompressedSize(cast(const void*) src, src.length);
+    const auto size = ZSTD_findFrameCompressedSize(src.ptr, src.length);
     ZSTDException.raiseIfError(size);
     return size;
 }
@@ -132,28 +132,23 @@ size_t compressBound(size_t srcSize) @trusted
 
 uint32_t getDictIDFromDict(const void[] dict)
 {
-    return ZSTD_getDictID_fromDict(cast(const void*) dict, dict.length);
+    return ZSTD_getDictID_fromDict(dict.ptr, dict.length);
 }
 
 uint32_t getDictIDFromFrame(const void[] src)
 {
-    return ZSTD_getDictID_fromFrame(cast(const void*) src, src.length);
+    return ZSTD_getDictID_fromFrame(src.ptr, src.length);
 }
 
 bool isSkippableFrame(const void[] buffer)
 {
-    return cast(bool) ZSTD_isSkippableFrame(cast(const void*) buffer, buffer.length);
+    return cast(bool) ZSTD_isSkippableFrame(buffer.ptr, buffer.length);
 }
 
 Tuple!(size_t, uint32_t) readSkippableFrame(void[] dst, const void[] src)
 {
     uint32_t magicVariant;
-    auto nBytes = ZSTD_readSkippableFrame(
-        cast(void*) dst,
-        dst.length,
-        &magicVariant,
-        cast(const void*) src,
-        src.length);
+    auto nBytes = ZSTD_readSkippableFrame(dst.ptr, dst.length, &magicVariant, src.ptr, src.length);
     ZSTDException.raiseIfError(nBytes);
     return tuple(nBytes, magicVariant);
 }
