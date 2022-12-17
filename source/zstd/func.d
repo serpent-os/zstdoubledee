@@ -3,6 +3,7 @@ module zstd.func;
 import std.format;
 import std.stdint;
 import std.string;
+import std.typecons : tuple, Tuple;
 
 import zstd.c.symbols;
 import zstd.common;
@@ -27,7 +28,7 @@ unittest
     assert(versionString().length > 0);
 }
 
-CompressionLevel minCompressionLevel() @trusted
+CompressionLevel minCompressionLevel()
 {
     return ZSTD_minCLevel();
 }
@@ -58,16 +59,16 @@ unittest
     assert(maxCompressionLevel() >= 22);
 }
 
-size_t compress(void* dst, size_t dstCapacity, void* src, size_t srcSize, CompressionLevel lvl) @trusted
+size_t compress(void[] dst, const void[] src, CompressionLevel lvl) @trusted
 {
-    const auto size = ZSTD_compress(dst, dstCapacity, src, srcSize, lvl);
+    const auto size = ZSTD_compress(cast(void*) dst, dst.length, cast(const void*) src, src.length, lvl);
     ZSTDException.raiseIfError(size);
     return size;
 }
 
-size_t decompress(void* dst, size_t dstCapacity, void* src, size_t compressedSize) @trusted
+size_t decompress(void[] dst, const void[] src, size_t compressedSize) @trusted
 {
-    const auto size = ZSTD_decompress(dst, dstCapacity, src, compressedSize);
+    const auto size = ZSTD_decompress(cast(void*) dst, dst.length, cast(const void*) src, compressedSize);
     ZSTDException.raiseIfError(size);
     return size;
 }
@@ -107,9 +108,9 @@ private:
     }
 }
 
-uint64_t getFrameContentSize(const void* src, size_t srcSize) @trusted
+uint64_t getFrameContentSize(const void[] src) @trusted
 {
-    const auto size = ZSTD_getFrameContentSize(src, srcSize);
+    const auto size = ZSTD_getFrameContentSize(cast(const void*) src, src.length);
     if (FrameContentSizeException.isError(size))
     {
         throw new FrameContentSizeException(cast(FrameContentSizeException.Kind) size);
@@ -117,9 +118,9 @@ uint64_t getFrameContentSize(const void* src, size_t srcSize) @trusted
     return size;
 }
 
-size_t findFrameCompressedSize(void* src, size_t srcSize) @trusted
+size_t findFrameCompressedSize(const void[] src) @trusted
 {
-    const auto size = ZSTD_findFrameCompressedSize(src, srcSize);
+    const auto size = ZSTD_findFrameCompressedSize(cast(const void*) src, src.length);
     ZSTDException.raiseIfError(size);
     return size;
 }
@@ -129,24 +130,30 @@ size_t compressBound(size_t srcSize) @trusted
     return ZSTD_compressBound(srcSize);
 }
 
-uint32_t getDictIDFromDict(const void* dict, size_t dictSize)
+uint32_t getDictIDFromDict(const void[] dict)
 {
-    return ZSTD_getDictID_fromDict(dict, dictSize);
+    return ZSTD_getDictID_fromDict(cast(const void*) dict, dict.length);
 }
 
-uint32_t getDictIDFromFrame(const void* src, size_t srcSize)
+uint32_t getDictIDFromFrame(const void[] src)
 {
-    return ZSTD_getDictID_fromFrame(src, srcSize);
+    return ZSTD_getDictID_fromFrame(cast(const void*) src, src.length);
 }
 
-bool isSkippableFrame(const void* buffer, size_t size)
+bool isSkippableFrame(const void[] buffer)
 {
-    return cast(bool) ZSTD_isSkippableFrame(buffer, size);
+    return cast(bool) ZSTD_isSkippableFrame(cast(const void*) buffer, buffer.length);
 }
 
-size_t readSkippableFrame(void* dst, size_t dstCap, uint32_t* magicVariant, const void* src, size_t srcSize)
+Tuple!(size_t, uint32_t) readSkippableFrame(void[] dst, const void[] src)
 {
-    const auto nBytes = ZSTD_readSkippableFrame(dst, dstCap, magicVariant, src, srcSize);
+    uint32_t magicVariant;
+    auto nBytes = ZSTD_readSkippableFrame(
+        cast(void*) dst,
+        dst.length,
+        &magicVariant,
+        cast(const void*) src,
+        src.length);
     ZSTDException.raiseIfError(nBytes);
-    return nBytes;
+    return tuple(nBytes, magicVariant);
 }
