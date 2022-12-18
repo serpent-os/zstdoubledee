@@ -28,49 +28,55 @@ class CompressionContext
         ZSTD_freeCCtx(ptr);
     }
 
-    size_t compress(void* dst, size_t dstCapacity, void* src, size_t srcSize, CompressionLevel lvl)
+    size_t compress(void[] dst, const void[] src, CompressionLevel lvl)
     {
-        const auto size = ZSTD_compressCCtx(ptr, dst, dstCapacity, src, srcSize, lvl);
+        const auto size = ZSTD_compressCCtx(ptr, dst.ptr, dst.length, src.ptr, src.length, lvl);
         ZSTDException.raiseIfError(size);
         return size;
     }
 
-    size_t compress(void* dst, size_t dstCapacity, void* src, size_t srcSize)
+    size_t compress(void[] dst, const void[] src)
     {
-        const auto size = ZSTD_compress2(ptr, dst, dstCapacity, src, srcSize);
+        const auto size = ZSTD_compress2(
+            ptr,
+            dst.ptr,
+            dst.length,
+            src.ptr,
+            src.length);
         ZSTDException.raiseIfError(size);
         return size;
     }
 
-    size_t compressUsingDict(
-        void* dst,
-        size_t dstCap,
-        const void* src,
-        size_t srcSize,
-        const void* dict,
-        size_t dictSize,
-        CompressionLevel lvl)
+    size_t compressUsingDict(void[] dst, const void[] src, const void[] dict, CompressionLevel lvl)
     {
-        const auto size = ZSTD_compress_usingDict(ptr, dst, dstCap, src, srcSize, dict, dictSize, lvl);
+        const auto size = ZSTD_compress_usingDict(
+            ptr,
+            dst.ptr,
+            dst.length,
+            src.ptr,
+            src.length,
+            dict.ptr,
+            dict.length,
+            lvl);
         ZSTDException.raiseIfError(size);
         return size;
     }
 
-    size_t compressUsingDict(
-        void* dst,
-        size_t dstCapacity,
-        const void* src,
-        size_t srcSize,
-        const CompressionDict cdict)
+    size_t compressUsingDict(void[] dst, const void[] src, const CompressionDict cdict)
     {
-        const auto size = ZSTD_compress_usingCDict(ptr, dst, dstCapacity, src, srcSize, cdict.ptr);
+        const auto size = ZSTD_compress_usingCDict(ptr,
+            dst.ptr,
+            dst.length,
+            src.ptr,
+            src.length,
+            cdict.ptr);
         ZSTDException.raiseIfError(size);
         return size;
     }
 
-    void loadDictionary(const void* dict, size_t dictSize)
+    void loadDictionary(const void[] dict)
     {
-        const auto errCode = ZSTD_CCtx_loadDictionary(ptr, dict, dictSize);
+        const auto errCode = ZSTD_CCtx_loadDictionary(ptr, dict.ptr, dict.length);
         ZSTDException.raiseIfError(errCode);
     }
 
@@ -80,9 +86,9 @@ class CompressionContext
         ZSTDException.raiseIfError(errCode);
     }
 
-    void refPrefix(const void* prefix, size_t prefixSize)
+    void refPrefix(const void[] prefix)
     {
-        const auto errCode = ZSTD_CCtx_refPrefix(ptr, prefix, prefixSize);
+        const auto errCode = ZSTD_CCtx_refPrefix(ptr, prefix.ptr, prefix.length);
         ZSTDException.raiseIfError(errCode);
     }
 
@@ -169,39 +175,42 @@ class DecompressionContext
         ZSTD_freeDCtx(ptr);
     }
 
-    size_t decompress(void* dst, size_t dstCapacity, const void* src, size_t srcSize)
+    size_t decompress(void[] dst, const void[] src)
     {
-        const auto size = ZSTD_decompressDCtx(ptr, dst, dstCapacity, src, srcSize);
+        const auto size = ZSTD_decompressDCtx(ptr, dst.ptr, dst.length, src.ptr, src.length);
         ZSTDException.raiseIfError(size);
         return size;
     }
 
-    size_t decompressUsingDict(
-        void* dst,
-        size_t dstCap,
-        const void* src,
-        size_t srcSize,
-        const void* dict,
-        size_t dictSize)
+    size_t decompressUsingDict(void[] dst, const void[] src, const void[] dict,)
     {
-        const auto size = ZSTD_decompress_usingDict(ptr, dst, dstCap, src, srcSize, dict, dictSize);
+        const auto size = ZSTD_decompress_usingDict(
+            ptr,
+            dst.ptr,
+            dst.length,
+            src.ptr,
+            src.length,
+            dict.ptr,
+            dict.length);
         ZSTDException.raiseIfError(size);
         return size;
     }
 
-    size_t decompressUsingDict(
-        void* dst, size_t dstCapacity,
-        const void* src, size_t srcSize,
-        const DecompressionDict ddict)
+    size_t decompressUsingDict(void[] dst, const void[] src, const DecompressionDict ddict)
     {
-        const auto size = ZSTD_decompress_usingDDict(ptr, dst, dstCapacity, src, srcSize, ddict.ptr);
+        const auto size = ZSTD_decompress_usingDDict(ptr,
+            dst.ptr,
+            dst.length,
+            src.ptr,
+            src.length,
+            ddict.ptr);
         ZSTDException.raiseIfError(size);
         return size;
     }
 
-    void loadDictionary(const void* dict, size_t dictSize)
+    void loadDictionary(const void[] dict)
     {
-        const auto errCode = ZSTD_DCtx_loadDictionary(ptr, dict, dictSize);
+        const auto errCode = ZSTD_DCtx_loadDictionary(ptr, dict.ptr, dict.length);
         ZSTDException.raiseIfError(errCode);
     }
 
@@ -211,9 +220,9 @@ class DecompressionContext
         ZSTDException.raiseIfError(errCode);
     }
 
-    void refPrefix(const void* prefix, size_t prefixSize)
+    void refPrefix(const void[] prefix)
     {
-        const auto errCode = ZSTD_DCtx_refPrefix(ptr, prefix, prefixSize);
+        const auto errCode = ZSTD_DCtx_refPrefix(ptr, prefix.ptr, prefix.length);
         ZSTDException.raiseIfError(errCode);
     }
 
