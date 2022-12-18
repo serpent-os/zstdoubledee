@@ -6,6 +6,9 @@ import std.string;
 import std.typecons : tuple, Tuple;
 
 import zstd.c.symbols;
+public import zstd.c.typedefs : Bounds,
+    CompressionParameter,
+    DecompressionParameter;
 import zstd.common;
 
 uint32_t versionNumber() @trusted
@@ -138,6 +141,28 @@ uint32_t getDictIDFromDict(const void[] dict)
 uint32_t getDictIDFromFrame(const void[] src)
 {
     return ZSTD_getDictID_fromFrame(src.ptr, src.length);
+}
+
+Bounds getBounds(CompressionParameter cp)
+{
+    return ZSTD_cParam_getBounds(cp);
+}
+
+unittest
+{
+    const auto bounds = getBounds(CompressionParameter.CompressionLevel);
+    assert(bounds.lowerBound < 0);
+}
+
+Bounds getBounds(DecompressionParameter dp)
+{
+    return ZSTD_dParam_getBounds(dp);
+}
+
+unittest
+{
+    const auto bounds = getBounds(DecompressionParameter.WindowLogMax);
+    assert(bounds.lowerBound > 0);
 }
 
 bool isSkippableFrame(const void[] buffer)

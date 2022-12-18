@@ -258,25 +258,3 @@ private:
     ZSTD_DCtx* ptr;
     ubyte[] buffer;
 }
-
-Bounds getBounds(CompressionParameter cp)
-{
-    return ZSTD_cParam_getBounds(cp);
-}
-
-unittest
-{
-    const auto bounds = getBounds(CompressionParameter.CompressionLevel);
-    assert(bounds.lowerBound < 0);
-}
-
-Bounds getBounds(DecompressionParameter dp)
-{
-    return ZSTD_dParam_getBounds(dp);
-}
-
-unittest
-{
-    const auto bounds = getBounds(DecompressionParameter.WindowLogMax);
-    assert(bounds.lowerBound > 0);
-}
