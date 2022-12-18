@@ -28,50 +28,50 @@ class CompressionContext
         ZSTD_freeCCtx(ptr);
     }
 
-    size_t compress(void[] dst, const void[] src, CompressionLevel lvl)
+    ubyte[] compress(const void[] src, CompressionLevel lvl)
     {
-        const auto size = ZSTD_compressCCtx(ptr, dst.ptr, dst.length, src.ptr, src.length, lvl);
+        const auto size = ZSTD_compressCCtx(ptr, buffer.ptr, buffer.length, src.ptr, src.length, lvl);
         ZSTDException.raiseIfError(size);
-        return size;
+        return buffer[0 .. size];
     }
 
-    size_t compress(void[] dst, const void[] src)
+    ubyte[] compress(const void[] src)
     {
         const auto size = ZSTD_compress2(
             ptr,
-            dst.ptr,
-            dst.length,
+            buffer.ptr,
+            buffer.length,
             src.ptr,
             src.length);
         ZSTDException.raiseIfError(size);
-        return size;
+        return buffer[0 .. size];
     }
 
-    size_t compressUsingDict(void[] dst, const void[] src, const void[] dict, CompressionLevel lvl)
+    ubyte[] compressUsingDict(const void[] src, const void[] dict, CompressionLevel lvl)
     {
         const auto size = ZSTD_compress_usingDict(
             ptr,
-            dst.ptr,
-            dst.length,
+            buffer.ptr,
+            buffer.length,
             src.ptr,
             src.length,
             dict.ptr,
             dict.length,
             lvl);
         ZSTDException.raiseIfError(size);
-        return size;
+        return buffer[0 .. size];
     }
 
-    size_t compressUsingDict(void[] dst, const void[] src, const CompressionDict cdict)
+    ubyte[] compressUsingDict(const void[] src, const CompressionDict cdict)
     {
         const auto size = ZSTD_compress_usingCDict(ptr,
-            dst.ptr,
-            dst.length,
+            buffer.ptr,
+            buffer.length,
             src.ptr,
             src.length,
             cdict.ptr);
         ZSTDException.raiseIfError(size);
-        return size;
+        return buffer[0 .. size];
     }
 
     void loadDictionary(const void[] dict)
@@ -161,6 +161,7 @@ class CompressionContext
 
 private:
     ZSTD_CCtx* ptr;
+    ubyte[] buffer;
 }
 
 class DecompressionContext
@@ -175,37 +176,37 @@ class DecompressionContext
         ZSTD_freeDCtx(ptr);
     }
 
-    size_t decompress(void[] dst, const void[] src)
+    ubyte[] decompress(const void[] src)
     {
-        const auto size = ZSTD_decompressDCtx(ptr, dst.ptr, dst.length, src.ptr, src.length);
+        const auto size = ZSTD_decompressDCtx(ptr, buffer.ptr, buffer.length, src.ptr, src.length);
         ZSTDException.raiseIfError(size);
-        return size;
+        return buffer[0 .. size];
     }
 
-    size_t decompressUsingDict(void[] dst, const void[] src, const void[] dict,)
+    ubyte[] decompressUsingDict(const void[] src, const void[] dict)
     {
         const auto size = ZSTD_decompress_usingDict(
             ptr,
-            dst.ptr,
-            dst.length,
+            buffer.ptr,
+            buffer.length,
             src.ptr,
             src.length,
             dict.ptr,
             dict.length);
         ZSTDException.raiseIfError(size);
-        return size;
+        return buffer[0 .. size];
     }
 
-    size_t decompressUsingDict(void[] dst, const void[] src, const DecompressionDict ddict)
+    ubyte[] decompressUsingDict(const void[] src, const DecompressionDict ddict)
     {
         const auto size = ZSTD_decompress_usingDDict(ptr,
-            dst.ptr,
-            dst.length,
+            buffer.ptr,
+            buffer.length,
             src.ptr,
             src.length,
             ddict.ptr);
         ZSTDException.raiseIfError(size);
-        return size;
+        return buffer[0 .. size];
     }
 
     void loadDictionary(const void[] dict)
@@ -255,6 +256,7 @@ class DecompressionContext
 
 private:
     ZSTD_DCtx* ptr;
+    ubyte[] buffer;
 }
 
 Bounds getBounds(CompressionParameter cp)
