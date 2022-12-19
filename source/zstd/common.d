@@ -16,8 +16,8 @@ package:
 
     this(size_t code, string filename = __FILE__, size_t line = __LINE__) @trusted
     {
-        auto name = std.string.fromStringz(ZSTD_getErrorName(code));
-        super(std.format.format("%s (%d)", cast(string) name, code), filename, line);
+        const auto name = ZSTD_getErrorName(code).fromStringz();
+        super("%s (%d)".format(cast(string) name, code), filename, line);
     }
 
     static raiseIfError(size_t code)
