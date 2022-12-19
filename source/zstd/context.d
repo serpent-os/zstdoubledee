@@ -12,6 +12,7 @@ public import zstd.c.typedefs : Bounds,
     ResetDirective;
 import zstd.common;
 import zstd.dict;
+import zstd.func;
 
 public alias CompressionStream = CompressionContext;
 public alias DecompressionStream = DecompressionContext;
@@ -30,6 +31,7 @@ class CompressionContext
 
     ubyte[] compress(const void[] src, CompressionLevel lvl)
     {
+        ensureCapacity(buffer, compressBound(src.length));
         const auto size = ZSTD_compressCCtx(ptr, buffer.ptr, buffer.length, src.ptr, src.length, lvl);
         ZSTDException.raiseIfError(size);
         return buffer[0 .. size];
@@ -37,6 +39,7 @@ class CompressionContext
 
     ubyte[] compress(const void[] src)
     {
+        ensureCapacity(buffer, compressBound(src.length));
         const auto size = ZSTD_compress2(
             ptr,
             buffer.ptr,
@@ -49,6 +52,7 @@ class CompressionContext
 
     ubyte[] compressUsingDict(const void[] src, const void[] dict, CompressionLevel lvl)
     {
+        ensureCapacity(buffer, compressBound(src.length));
         const auto size = ZSTD_compress_usingDict(
             ptr,
             buffer.ptr,
@@ -64,6 +68,7 @@ class CompressionContext
 
     ubyte[] compressUsingDict(const void[] src, const CompressionDict cdict)
     {
+        ensureCapacity(buffer, compressBound(src.length));
         const auto size = ZSTD_compress_usingCDict(ptr,
             buffer.ptr,
             buffer.length,
@@ -257,4 +262,16 @@ class DecompressionContext
 private:
     ZSTD_DCtx* ptr;
     ubyte[] buffer;
+}
+
+private
+{
+    void ensureCapacity(ref ubyte[] arr, size_t size)
+    {
+        if (arr.length >= size)
+        {
+            return;
+        }
+        arr.length = size;
+    }
 }
