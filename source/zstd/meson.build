@@ -1,6 +1,7 @@
 src_lib = files(
     'c/symbols.d',
     'c/typedefs.d',
+    'highlevel/context.d',
     'common.d',
     'context.d',
     'dict.d',
