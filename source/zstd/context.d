@@ -238,7 +238,7 @@ class DecompressionContext
         return ZSTD_DStreamInSize();
     }
 
-    size_t streamOutSize()
+    static size_t streamOutSize()
     {
         return ZSTD_DStreamOutSize();
     }
