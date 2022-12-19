@@ -82,14 +82,20 @@ class CompressionContext
         return ctx.streamInit(lvl);
     }
 
-    size_t streamCompress(OutBuffer* output, InBuffer* input)
+    Tuple!(ubyte[], size_t, size_t) streamCompress(const void[] src)
     {
-        return ctx.streamCompress(output, input);
+        auto input = InBuffer(src.ptr, src.length);
+        auto output = OutBuffer(buffer.ptr, buffer.length);
+        auto hint = ctx.streamCompress(&output, &input);
+        return tuple(buffer[0 .. output.pos], hint, input.pos);
     }
 
-    size_t streamCompress(OutBuffer* output, InBuffer* input, EndDirective endOp)
+    Tuple!(ubyte[], size_t, size_t) streamCompress(const void[] src, EndDirective endOp)
     {
-        return ctx.streamCompress(output, input, endOp);
+        auto input = InBuffer(src.ptr, src.length);
+        auto output = OutBuffer(buffer.ptr, buffer.length);
+        auto remain = ctx.streamCompress(&output, &input, endOp);
+        return tuple(buffer[0 .. output.pos], remain, input.pos);
     }
 
     Tuple!(ubyte[], size_t) streamFlush()
