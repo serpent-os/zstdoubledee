@@ -31,7 +31,7 @@ class CompressionContext
 
     ubyte[] compress(const void[] src, CompressionLevel lvl)
     {
-        ensureBufferCapacity(compressBound(src.length));
+        buffer.ensureCapacity(compressBound(src.length));
         const auto size = ZSTD_compressCCtx(ptr, buffer.ptr, buffer.length, src.ptr, src.length, lvl);
         ZSTDException.raiseIfError(size);
         return buffer[0 .. size];
@@ -39,7 +39,7 @@ class CompressionContext
 
     ubyte[] compress(const void[] src)
     {
-        ensureBufferCapacity(compressBound(src.length));
+        buffer.ensureCapacity(compressBound(src.length));
         const auto size = ZSTD_compress2(
             ptr,
             buffer.ptr,
@@ -52,7 +52,7 @@ class CompressionContext
 
     ubyte[] compressUsingDict(const void[] src, const void[] dict, CompressionLevel lvl)
     {
-        ensureBufferCapacity(compressBound(src.length));
+        buffer.ensureCapacity(compressBound(src.length));
         const auto size = ZSTD_compress_usingDict(
             ptr,
             buffer.ptr,
@@ -68,7 +68,7 @@ class CompressionContext
 
     ubyte[] compressUsingDict(const void[] src, const CompressionDict cdict)
     {
-        ensureBufferCapacity(compressBound(src.length));
+        buffer.ensureCapacity(compressBound(src.length));
         const auto size = ZSTD_compress_usingCDict(ptr,
             buffer.ptr,
             buffer.length,
@@ -167,15 +167,6 @@ class CompressionContext
 private:
     ZSTD_CCtx* ptr;
     ubyte[] buffer;
-
-    void ensureBufferCapacity(size_t size)
-    {
-        if (buffer.length >= size)
-        {
-            return;
-        }
-        buffer.length = size;
-    }
 }
 
 class DecompressionContext
@@ -192,7 +183,7 @@ class DecompressionContext
 
     ubyte[] decompress(const void[] src)
     {
-        ensureBufferCapacity(bufferSizeFor(src));
+        buffer.ensureCapacity(bufferSizeFor(src));
         const auto size = ZSTD_decompressDCtx(ptr, buffer.ptr, buffer.length, src.ptr, src.length);
         ZSTDException.raiseIfError(size);
         return buffer[0 .. size];
@@ -200,7 +191,7 @@ class DecompressionContext
 
     ubyte[] decompressUsingDict(const void[] src, const void[] dict)
     {
-        ensureBufferCapacity(bufferSizeFor(src));
+        buffer.ensureCapacity(bufferSizeFor(src));
         const auto size = ZSTD_decompress_usingDict(
             ptr,
             buffer.ptr,
@@ -215,7 +206,7 @@ class DecompressionContext
 
     ubyte[] decompressUsingDict(const void[] src, const DecompressionDict ddict)
     {
-        ensureBufferCapacity(bufferSizeFor(src));
+        buffer.ensureCapacity(bufferSizeFor(src));
         const auto size = ZSTD_decompress_usingDDict(ptr,
             buffer.ptr,
             buffer.length,
@@ -275,15 +266,6 @@ private:
     ZSTD_DCtx* ptr;
     ubyte[] buffer;
 
-    void ensureBufferCapacity(size_t size)
-    {
-        if (buffer.length >= size)
-        {
-            return;
-        }
-        buffer.length = size;
-    }
-
     size_t bufferSizeFor(const void[] src)
     {
         try
@@ -294,5 +276,17 @@ private:
         {
             return decompressBound(src);
         }
+    }
+}
+
+private
+{
+    void ensureCapacity(ref ubyte[] buf, size_t size)
+    {
+        if (buf.length >= size)
+        {
+            return;
+        }
+        buf.length = size;
     }
 }
