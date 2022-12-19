@@ -3,14 +3,8 @@ module zstd.highlevel.context;
 import std.stdint;
 
 import zstd.c.symbols;
-public import zstd.c.typedefs : Bounds,
-    CompressionParameter,
-    DecompressionParameter,
-    EndDirective,
-    InBuffer,
-    OutBuffer,
-    ResetDirective;
 import zstd.common;
+import zstd.context;
 import zstd.dict;
 import zstd.func;
 
@@ -21,151 +15,104 @@ class CompressionContext
 {
     this()
     {
-        ptr = ZSTD_createCCtx();
+        ctx = new zstd.context.CompressionContext();
     }
 
-    ~this()
+    this(zstd.context.CompressionContext ctx)
     {
-        ZSTD_freeCCtx(ptr);
+        this.ctx = ctx;
     }
 
     ubyte[] compress(const void[] src, CompressionLevel lvl)
     {
         buffer.ensureCapacity(compressBound(src.length));
-        const auto size = ZSTD_compressCCtx(ptr, buffer.ptr, buffer.length, src.ptr, src.length, lvl);
-        ZSTDException.raiseIfError(size);
+        const auto size = ctx.compress(buffer, src, lvl);
         return buffer[0 .. size];
     }
 
     ubyte[] compress(const void[] src)
     {
         buffer.ensureCapacity(compressBound(src.length));
-        const auto size = ZSTD_compress2(
-            ptr,
-            buffer.ptr,
-            buffer.length,
-            src.ptr,
-            src.length);
-        ZSTDException.raiseIfError(size);
+        const auto size = ctx.compress(buffer, src);
         return buffer[0 .. size];
     }
 
     ubyte[] compressUsingDict(const void[] src, const void[] dict, CompressionLevel lvl)
     {
         buffer.ensureCapacity(compressBound(src.length));
-        const auto size = ZSTD_compress_usingDict(
-            ptr,
-            buffer.ptr,
-            buffer.length,
-            src.ptr,
-            src.length,
-            dict.ptr,
-            dict.length,
-            lvl);
-        ZSTDException.raiseIfError(size);
+        const auto size = ctx.compressUsingDict(buffer, src, dict, lvl);
         return buffer[0 .. size];
     }
 
-    ubyte[] compressUsingDict(const void[] src, const CompressionDict cdict)
+    ubyte[] compressUsingDict(const void[] src, const CompressionDict dict)
     {
         buffer.ensureCapacity(compressBound(src.length));
-        const auto size = ZSTD_compress_usingCDict(ptr,
-            buffer.ptr,
-            buffer.length,
-            src.ptr,
-            src.length,
-            cdict.ptr);
-        ZSTDException.raiseIfError(size);
+        const auto size = ctx.compressUsingDict(buffer, src, dict);
         return buffer[0 .. size];
     }
 
     void loadDictionary(const void[] dict)
     {
-        const auto errCode = ZSTD_CCtx_loadDictionary(ptr, dict.ptr, dict.length);
-        ZSTDException.raiseIfError(errCode);
+        return ctx.loadDictionary(dict);
     }
 
     void refDict(const CompressionDict dict)
     {
-        const auto errCode = ZSTD_CCtx_refCDict(ptr, dict.ptr);
-        ZSTDException.raiseIfError(errCode);
+        return ctx.refDict(dict);
     }
 
     void refPrefix(const void[] prefix)
     {
-        const auto errCode = ZSTD_CCtx_refPrefix(ptr, prefix.ptr, prefix.length);
-        ZSTDException.raiseIfError(errCode);
+        return ctx.refPrefix(prefix);
     }
 
     void setParameter(CompressionParameter param, int value)
     {
-        const auto errCode = ZSTD_CCtx_setParameter(ptr, param, value);
-        ZSTDException.raiseIfError(errCode);
+        return ctx.setParameter(param, value);
     }
 
     void setPledgedSrcSize(uint64_t pledgedSrcSize)
     {
-        const auto errCode = ZSTD_CCtx_setPledgedSrcSize(ptr, pledgedSrcSize);
-        ZSTDException.raiseIfError(errCode);
+        return ctx.setPledgedSrcSize(pledgedSrcSize);
     }
 
     void streamInit(CompressionLevel lvl)
     {
-        const auto errcode = ZSTD_initCStream(ptr, lvl);
-        ZSTDException.raiseIfError(errcode);
+        return ctx.streamInit(lvl);
     }
 
     size_t streamCompress(OutBuffer* output, InBuffer* input)
     {
-        const auto size = ZSTD_compressStream(ptr, output, input);
-        ZSTDException.raiseIfError(size);
-        return size;
+        return ctx.streamCompress(output, input);
     }
 
     size_t streamCompress(OutBuffer* output, InBuffer* input, EndDirective endOp)
     {
-        const auto remain = ZSTD_compressStream2(ptr, output, input, endOp);
-        ZSTDException.raiseIfError(remain);
-        return remain;
+        return ctx.streamCompress(output, input, endOp);
     }
 
     size_t streamFlush(OutBuffer* output)
     {
-        const auto size = ZSTD_flushStream(ptr, output);
-        ZSTDException.raiseIfError(size);
-        return size;
+        return ctx.streamFlush(output);
     }
 
     size_t streamEnd(OutBuffer* output)
     {
-        const auto size = ZSTD_endStream(ptr, output);
-        ZSTDException.raiseIfError(size);
-        return size;
-    }
-
-    static size_t streamInSize()
-    {
-        return ZSTD_CStreamInSize();
-    }
-
-    static size_t streamOutSize()
-    {
-        return ZSTD_CStreamOutSize();
+        return ctx.streamEnd(output);
     }
 
     size_t sizeOf()
     {
-        return ZSTD_sizeof_CCtx(ptr);
+        return ctx.sizeOf();
     }
 
     void reset(ResetDirective directive)
     {
-        const auto errCode = ZSTD_CCtx_reset(ptr, directive);
-        ZSTDException.raiseIfError(errCode);
+        return ctx.reset(directive);
     }
 
 private:
-    ZSTD_CCtx* ptr;
+    zstd.context.CompressionContext ctx;
     ubyte[] buffer;
 }
 
@@ -173,97 +120,67 @@ class DecompressionContext
 {
     this()
     {
-        ptr = ZSTD_createDCtx();
+        ctx = new zstd.context.DecompressionContext();
     }
 
-    ~this()
+    this(zstd.context.DecompressionContext ctx)
     {
-        ZSTD_freeDCtx(ptr);
+        this.ctx = ctx;
     }
 
     ubyte[] decompress(const void[] src)
     {
         buffer.ensureCapacity(bufferSizeFor(src));
-        const auto size = ZSTD_decompressDCtx(ptr, buffer.ptr, buffer.length, src.ptr, src.length);
-        ZSTDException.raiseIfError(size);
+        const auto size = ctx.decompress(buffer, src);
         return buffer[0 .. size];
     }
 
     ubyte[] decompressUsingDict(const void[] src, const void[] dict)
     {
         buffer.ensureCapacity(bufferSizeFor(src));
-        const auto size = ZSTD_decompress_usingDict(
-            ptr,
-            buffer.ptr,
-            buffer.length,
-            src.ptr,
-            src.length,
-            dict.ptr,
-            dict.length);
-        ZSTDException.raiseIfError(size);
+        const auto size = ctx.decompressUsingDict(buffer, src, dict);
         return buffer[0 .. size];
     }
 
-    ubyte[] decompressUsingDict(const void[] src, const DecompressionDict ddict)
+    ubyte[] decompressUsingDict(const void[] src, const DecompressionDict dict)
     {
         buffer.ensureCapacity(bufferSizeFor(src));
-        const auto size = ZSTD_decompress_usingDDict(ptr,
-            buffer.ptr,
-            buffer.length,
-            src.ptr,
-            src.length,
-            ddict.ptr);
-        ZSTDException.raiseIfError(size);
+        const auto size = ctx.decompressUsingDict(buffer, src, dict);
         return buffer[0 .. size];
     }
 
     void loadDictionary(const void[] dict)
     {
-        const auto errCode = ZSTD_DCtx_loadDictionary(ptr, dict.ptr, dict.length);
-        ZSTDException.raiseIfError(errCode);
+        return ctx.loadDictionary(dict);
     }
 
     void refDict(const DecompressionDict dict)
     {
-        const auto errCode = ZSTD_DCtx_refDDict(ptr, dict.ptr);
-        ZSTDException.raiseIfError(errCode);
+        return ctx.refDict(dict);
     }
 
     void refPrefix(const void[] prefix)
     {
-        const auto errCode = ZSTD_DCtx_refPrefix(ptr, prefix.ptr, prefix.length);
-        ZSTDException.raiseIfError(errCode);
+        return ctx.refPrefix(prefix);
     }
 
     void setParameter(DecompressionParameter param, int value)
     {
-        const auto errCode = ZSTD_DCtx_setParameter(ptr, param, value);
-        ZSTDException.raiseIfError(errCode);
-    }
-
-    static size_t streamInSize()
-    {
-        return ZSTD_DStreamInSize();
-    }
-
-    size_t streamOutSize()
-    {
-        return ZSTD_DStreamOutSize();
+        return ctx.setParameter(param, value);
     }
 
     size_t sizeOf()
     {
-        return ZSTD_sizeof_DCtx(ptr);
+        return ctx.sizeOf();
     }
 
     void reset(ResetDirective directive)
     {
-        const auto errCode = ZSTD_DCtx_reset(ptr, directive);
-        ZSTDException.raiseIfError(errCode);
+        return ctx.reset(directive);
     }
 
 private:
-    ZSTD_DCtx* ptr;
+    zstd.context.DecompressionContext ctx;
     ubyte[] buffer;
 
     size_t bufferSizeFor(const void[] src)
