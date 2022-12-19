@@ -23,7 +23,7 @@ unittest
 
 string versionString() @trusted
 {
-    return cast(string) std.string.fromStringz(ZSTD_versionString());
+    return cast(string) ZSTD_versionString().fromStringz();
 }
 
 unittest
@@ -101,11 +101,11 @@ private:
         {
         case Kind.SizeUnknown:
             {
-                return std.format.format("size cannot be determined (code %d)", kind);
+                return "size cannot be determined (code %d)".format(kind);
             }
         case Kind.SizeError:
             {
-                return std.format.format("one of the arguments is invalid (code %d)", kind);
+                return "one of the arguments is invalid (code %d)".format(kind);
             }
         }
     }
