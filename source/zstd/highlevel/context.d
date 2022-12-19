@@ -1,6 +1,7 @@
 module zstd.highlevel.context;
 
 import std.stdint;
+import std.typecons : tuple, Tuple;
 
 import zstd.c.symbols;
 import zstd.common;
@@ -91,9 +92,11 @@ class CompressionContext
         return ctx.streamCompress(output, input, endOp);
     }
 
-    size_t streamFlush(OutBuffer* output)
+    Tuple!(ubyte[], size_t) streamFlush()
     {
-        return ctx.streamFlush(output);
+        auto output = OutBuffer(buffer.ptr, buffer.length);
+        auto remain = ctx.streamFlush(&output);
+        return tuple(buffer[0 .. output.pos], remain);
     }
 
     size_t streamEnd(OutBuffer* output)
