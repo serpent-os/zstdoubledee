@@ -133,6 +133,11 @@ size_t compressBound(size_t srcSize) @trusted
     return ZSTD_compressBound(srcSize);
 }
 
+uint64_t decompressBound(const void[] src) @trusted
+{
+    return ZSTD_decompressBound(src.ptr, src.length);
+}
+
 uint32_t getDictIDFromDict(const void[] dict)
 {
     return ZSTD_getDictID_fromDict(dict.ptr, dict.length);
