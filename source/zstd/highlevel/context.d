@@ -99,9 +99,11 @@ class CompressionContext
         return tuple(buffer[0 .. output.pos], remain);
     }
 
-    size_t streamEnd(OutBuffer* output)
+    Tuple!(ubyte[], size_t) streamEnd()
     {
-        return ctx.streamEnd(output);
+        auto output = OutBuffer(buffer.ptr, buffer.length);
+        auto remain = ctx.streamEnd(&output);
+        return tuple(buffer[0 .. output.pos], remain);
     }
 
     size_t sizeOf()
