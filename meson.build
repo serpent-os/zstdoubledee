@@ -13,11 +13,12 @@ dep_zstd = dependency('libzstd',
 )
 
 subdir('source/zstd')
-lib = static_library(meson.project_name(),
+lib = library(meson.project_name(),
     sources: src_lib,
     dependencies: dep_zstd,
     include_directories: src_include,
     install: shouldInstall,
+    version: meson.project_version(),
 )
 
 if get_option('tests')
