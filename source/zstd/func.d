@@ -212,9 +212,21 @@ uint32_t getDictIDFromDict(const void[] dict)
     return ZSTD_getDictID_fromDict(dict.ptr, dict.length);
 }
 
+unittest
+{
+    /* Because it's an invalid dict technically. */
+    assert(getDictIDFromDict(null) == 0);
+}
+
 uint32_t getDictIDFromFrame(const void[] src)
 {
     return ZSTD_getDictID_fromFrame(src.ptr, src.length);
+}
+
+unittest
+{
+    /* Because it's an invalid frame technically. */
+    assert(getDictIDFromFrame(null) == 0);
 }
 
 Bounds getBounds(CompressionParameter cp)
@@ -244,11 +256,27 @@ bool isSkippableFrame(const void[] buffer)
     return cast(bool) ZSTD_isSkippableFrame(buffer.ptr, buffer.length);
 }
 
+unittest
+{
+    assert(isSkippableFrame(null) == false);
+}
+
 Tuple!(size_t, uint32_t) readSkippableFrame(void[] dst, const void[] src)
 {
     uint32_t magicVariant;
-    auto nBytes = ZSTD_readSkippableFrame(dst.ptr, dst.length, &magicVariant, src.ptr, src
-            .length);
+    auto nBytes = ZSTD_readSkippableFrame(
+        dst.ptr,
+        dst.length,
+        &magicVariant,
+        src.ptr,
+        src.length);
     ZSTDException.raiseIfError(nBytes);
     return tuple(nBytes, magicVariant);
+}
+
+unittest
+{
+    import std.exception : assertThrown;
+
+    assertThrown!ZSTDException(readSkippableFrame(new ubyte[1], new ubyte[1]));
 }
