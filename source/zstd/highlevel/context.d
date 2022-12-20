@@ -84,6 +84,7 @@ class CompressionContext
 
     Tuple!(ubyte[], size_t, size_t) streamCompress(const void[] src)
     {
+        buffer.ensureCapacity(zstd.context.CompressionContext.streamOutSize());
         auto input = InBuffer(src.ptr, src.length);
         auto output = OutBuffer(buffer.ptr, buffer.length);
         auto hint = ctx.streamCompress(&output, &input);
@@ -92,6 +93,7 @@ class CompressionContext
 
     Tuple!(ubyte[], size_t, size_t) streamCompress(const void[] src, EndDirective endOp)
     {
+        buffer.ensureCapacity(zstd.context.CompressionContext.streamOutSize());
         auto input = InBuffer(src.ptr, src.length);
         auto output = OutBuffer(buffer.ptr, buffer.length);
         auto remain = ctx.streamCompress(&output, &input, endOp);
@@ -100,6 +102,7 @@ class CompressionContext
 
     Tuple!(ubyte[], size_t) streamFlush()
     {
+        buffer.ensureCapacity(zstd.context.CompressionContext.streamOutSize());
         auto output = OutBuffer(buffer.ptr, buffer.length);
         auto remain = ctx.streamFlush(&output);
         return tuple(buffer[0 .. output.pos], remain);
@@ -107,6 +110,7 @@ class CompressionContext
 
     Tuple!(ubyte[], size_t) streamEnd()
     {
+        buffer.ensureCapacity(zstd.context.CompressionContext.streamOutSize());
         auto output = OutBuffer(buffer.ptr, buffer.length);
         auto remain = ctx.streamEnd(&output);
         return tuple(buffer[0 .. output.pos], remain);
