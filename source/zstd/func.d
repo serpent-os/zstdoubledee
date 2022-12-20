@@ -49,7 +49,7 @@ CompressionLevel defaultCompressionLevel() @trusted
 unittest
 {
     const auto lvl = defaultCompressionLevel();
-    assert(lvl >= minCompressionLevel && lvl <= maxCompressionLevel);
+    assert(lvl >= minCompressionLevel() && lvl <= maxCompressionLevel());
 }
 
 CompressionLevel maxCompressionLevel() @trusted
@@ -59,7 +59,8 @@ CompressionLevel maxCompressionLevel() @trusted
 
 unittest
 {
-    assert(maxCompressionLevel() >= 22);
+    immutable auto v150MaxLevel = 22; /* May be subject to changes. */
+    assert(maxCompressionLevel() >= v150MaxLevel);
 }
 
 size_t compress(void[] dst, const void[] src, CompressionLevel lvl) @trusted
@@ -69,11 +70,36 @@ size_t compress(void[] dst, const void[] src, CompressionLevel lvl) @trusted
     return size;
 }
 
+unittest
+{
+    import std.algorithm.comparison : equal;
+    import std.exception : assertNotThrown;
+
+    ubyte[] src = [1, 2, 3];
+    ubyte[] dst;
+    dst.length = compressBound(src.length);
+    assertNotThrown(compress(dst, src, 1));
+    assert(!equal(dst, new ubyte[dst.length]));
+}
+
 size_t decompress(void[] dst, const void[] src) @trusted
 {
     const auto size = ZSTD_decompress(dst.ptr, dst.length, src.ptr, src.length);
     ZSTDException.raiseIfError(size);
     return size;
+}
+
+unittest
+{
+    import std.algorithm.comparison : equal;
+    import std.exception : assertNotThrown;
+
+    /* This is the dst of the compression test. */
+    ubyte[] src = [40, 181, 47, 253, 32, 3, 25, 0, 0, 1, 2, 3];
+    ubyte[] dst;
+    dst.length = src.length;
+    assertNotThrown(decompress(dst, src));
+    assert(!equal(dst, new ubyte[dst.length]));
 }
 
 class FrameContentSizeException : ZSTDException
@@ -178,7 +204,8 @@ bool isSkippableFrame(const void[] buffer)
 Tuple!(size_t, uint32_t) readSkippableFrame(void[] dst, const void[] src)
 {
     uint32_t magicVariant;
-    auto nBytes = ZSTD_readSkippableFrame(dst.ptr, dst.length, &magicVariant, src.ptr, src.length);
+    auto nBytes = ZSTD_readSkippableFrame(dst.ptr, dst.length, &magicVariant, src.ptr, src
+            .length);
     ZSTDException.raiseIfError(nBytes);
     return tuple(nBytes, magicVariant);
 }
