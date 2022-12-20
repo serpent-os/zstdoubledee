@@ -135,16 +135,32 @@ private:
             }
         }
     }
+
+    static void raiseIfError(uint64_t size) @safe
+    {
+        if (!isError(size))
+        {
+            return;
+        }
+        throw new FrameContentSizeException(cast(Kind) size);
+    }
 }
 
 uint64_t getFrameContentSize(const void[] src) @trusted
 {
     const auto size = ZSTD_getFrameContentSize(src.ptr, src.length);
-    if (FrameContentSizeException.isError(size))
-    {
-        throw new FrameContentSizeException(cast(FrameContentSizeException.Kind) size);
-    }
+    FrameContentSizeException.raiseIfError(size);
     return size;
+}
+
+unittest
+{
+    import std.exception : assertNotThrown, assertThrown;
+
+    /* This is the dst of the compression test. */
+    ubyte[] src = [40, 181, 47, 253, 32, 3, 25, 0, 0, 1, 2, 3];
+    assertNotThrown(getFrameContentSize(src));
+    assertThrown!FrameContentSizeException(getFrameContentSize(null));
 }
 
 size_t findFrameCompressedSize(const void[] src) @trusted
@@ -154,14 +170,41 @@ size_t findFrameCompressedSize(const void[] src) @trusted
     return size;
 }
 
+unittest
+{
+    import std.exception : assertThrown;
+
+    /* This is the dst of the compression test. */
+    ubyte[] src = [40, 181, 47, 253, 32, 3, 25, 0, 0, 1, 2, 3];
+    assert(findFrameCompressedSize(src) > 0);
+    assertThrown!ZSTDException(findFrameCompressedSize(null));
+}
+
 size_t compressBound(size_t srcSize) @trusted
 {
     return ZSTD_compressBound(srcSize);
 }
 
+unittest
+{
+    assert(compressBound(1) > 0);
+}
+
 uint64_t decompressBound(const void[] src) @trusted
 {
-    return ZSTD_decompressBound(src.ptr, src.length);
+    const auto size = ZSTD_decompressBound(src.ptr, src.length);
+    FrameContentSizeException.raiseIfError(size);
+    return size;
+}
+
+unittest
+{
+    import std.exception : assertThrown;
+
+    /* This is the dst of the compression test. */
+    ubyte[] src = [40, 181, 47, 253, 32, 3, 25, 0, 0, 1, 2, 3];
+    assert(decompressBound(src) > 0);
+    assertThrown!FrameContentSizeException(decompressBound(new ubyte[1]));
 }
 
 uint32_t getDictIDFromDict(const void[] dict)
