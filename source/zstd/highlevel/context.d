@@ -82,22 +82,40 @@ class CompressionContext
         return ctx.streamInit(lvl);
     }
 
-    Tuple!(ubyte[], size_t, size_t) streamCompress(const void[] src)
+    Tuple!(ubyte[], size_t, size_t) streamCompress(const void[] chunk)
     {
         buffer.ensureCapacity(zstd.context.CompressionContext.streamOutSize());
-        auto input = InBuffer(src.ptr, src.length);
+        auto input = InBuffer(chunk.ptr, chunk.length);
         auto output = OutBuffer(buffer.ptr, buffer.length);
         auto hint = ctx.streamCompress(&output, &input);
         return tuple(buffer[0 .. output.pos], hint, input.pos);
     }
 
-    Tuple!(ubyte[], size_t, size_t) streamCompress(const void[] src, EndDirective endOp)
+    Tuple!(ubyte[], size_t, size_t) streamCompress(const void[] chunk, EndDirective endOp)
     {
         buffer.ensureCapacity(zstd.context.CompressionContext.streamOutSize());
-        auto input = InBuffer(src.ptr, src.length);
+        auto input = InBuffer(chunk.ptr, chunk.length);
         auto output = OutBuffer(buffer.ptr, buffer.length);
         auto remain = ctx.streamCompress(&output, &input, endOp);
         return tuple(buffer[0 .. output.pos], remain, input.pos);
+    }
+
+    ubyte[] streamCompressAll(const void[] chunk)
+    {
+        ubyte[] ret;
+        ret.length = 4 * zstd.context.CompressionContext.streamOutSize();
+        auto subChunk = chunk[0 .. $];
+        for (;;)
+        {
+            auto result = streamCompress(subChunk, EndDirective.Continue);
+            ret ~= result[0];
+            if (result[1] == 0 && result[2] == chunk.length)
+            {
+                break;
+            }
+            subChunk = subChunk[result[2] .. $];
+        }
+        return ret;
     }
 
     Tuple!(ubyte[], size_t) streamFlush()
