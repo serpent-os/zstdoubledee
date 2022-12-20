@@ -66,7 +66,7 @@ unittest
 size_t compress(void[] dst, const void[] src, CompressionLevel lvl) @trusted
 {
     const auto size = ZSTD_compress(dst.ptr, dst.length, src.ptr, src.length, lvl);
-    ZSTDException.raiseIfError(size);
+    ZSTDException.throwIfError(size);
     return size;
 }
 
@@ -85,7 +85,7 @@ unittest
 size_t decompress(void[] dst, const void[] src) @trusted
 {
     const auto size = ZSTD_decompress(dst.ptr, dst.length, src.ptr, src.length);
-    ZSTDException.raiseIfError(size);
+    ZSTDException.throwIfError(size);
     return size;
 }
 
@@ -136,7 +136,7 @@ private:
         }
     }
 
-    static void raiseIfError(uint64_t size) @safe
+    static void throwIfError(uint64_t size) @safe
     {
         if (!isError(size))
         {
@@ -149,7 +149,7 @@ private:
 uint64_t getFrameContentSize(const void[] src) @trusted
 {
     const auto size = ZSTD_getFrameContentSize(src.ptr, src.length);
-    FrameContentSizeException.raiseIfError(size);
+    FrameContentSizeException.throwIfError(size);
     return size;
 }
 
@@ -166,7 +166,7 @@ unittest
 size_t findFrameCompressedSize(const void[] src) @trusted
 {
     const auto size = ZSTD_findFrameCompressedSize(src.ptr, src.length);
-    ZSTDException.raiseIfError(size);
+    ZSTDException.throwIfError(size);
     return size;
 }
 
@@ -193,7 +193,7 @@ unittest
 uint64_t decompressBound(const void[] src) @trusted
 {
     const auto size = ZSTD_decompressBound(src.ptr, src.length);
-    FrameContentSizeException.raiseIfError(size);
+    FrameContentSizeException.throwIfError(size);
     return size;
 }
 
@@ -270,7 +270,7 @@ Tuple!(size_t, uint32_t) readSkippableFrame(void[] dst, const void[] src)
         &magicVariant,
         src.ptr,
         src.length);
-    ZSTDException.raiseIfError(nBytes);
+    ZSTDException.throwIfError(nBytes);
     return tuple(nBytes, magicVariant);
 }
 

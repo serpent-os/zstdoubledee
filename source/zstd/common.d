@@ -25,7 +25,7 @@ package:
         super("%s (%d)".format(cast(string) name, code), filename, line);
     }
 
-    static raiseIfError(size_t code)
+    static throwIfError(size_t code)
     {
         if (ZSTD_isError(code))
         {
@@ -70,8 +70,8 @@ unittest
 
     const auto errCode = ZSTD_compress(null, 0, null, 0, 1);
     immutable auto okCode = 0;
-    assertNotThrown(ZSTDException.raiseIfError(okCode));
-    assertThrown!ZSTDException(ZSTDException.raiseIfError(errCode));
+    assertNotThrown(ZSTDException.throwIfError(okCode));
+    assertThrown!ZSTDException(ZSTDException.throwIfError(errCode));
 }
 
 alias CompressionLevel = int32_t;
