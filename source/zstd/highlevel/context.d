@@ -108,12 +108,44 @@ class CompressionContext
         return tuple(buffer[0 .. output.pos], remain);
     }
 
+    ubyte[] streamFlushAll()
+    {
+        ubyte[] ret;
+        ret.length = 2 * zstd.context.CompressionContext.streamOutSize();
+        for (;;)
+        {
+            auto result = streamFlush();
+            ret ~= result[0];
+            if (result[1] == 0)
+            {
+                break;
+            }
+        }
+        return ret;
+    }
+
     Tuple!(ubyte[], size_t) streamEnd()
     {
         buffer.ensureCapacity(zstd.context.CompressionContext.streamOutSize());
         auto output = OutBuffer(buffer.ptr, buffer.length);
         auto remain = ctx.streamEnd(&output);
         return tuple(buffer[0 .. output.pos], remain);
+    }
+
+    ubyte[] streamEndAll()
+    {
+        ubyte[] ret;
+        ret.length = 2 * zstd.context.CompressionContext.streamOutSize();
+        for (;;)
+        {
+            auto result = streamEnd();
+            ret ~= result[0];
+            if (result[1] == 0)
+            {
+                break;
+            }
+        }
+        return ret;
     }
 
     size_t sizeOf()
