@@ -1,5 +1,5 @@
 project('zstd-d',['d'],
-    version: '0.0.2',
+    version: '1.0.0',
 	license: 'Zlib',
 )
 
