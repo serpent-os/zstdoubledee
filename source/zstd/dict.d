@@ -31,6 +31,16 @@ package:
     ZSTD_CDict* ptr;
 }
 
+unittest
+{
+    assert(new CompressionDict(null, 1).getDictID() == 0);
+}
+
+unittest
+{
+    assert(new CompressionDict(null, 1).sizeOf() > 0);
+}
+
 class DecompressionDict
 {
     this(const void[] dictBuffer)
@@ -55,4 +65,14 @@ class DecompressionDict
 
 package:
     ZSTD_DDict* ptr;
+}
+
+unittest
+{
+    assert(new DecompressionDict(null).getDictID() == 0);
+}
+
+unittest
+{
+    assert(new DecompressionDict(null).sizeOf() > 0);
 }
