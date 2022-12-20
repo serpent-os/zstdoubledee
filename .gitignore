@@ -3,5 +3,6 @@
 build/
 
 *.a
+*.lst
 dub.selections.json
 zstd-d-test-library
