@@ -27,6 +27,7 @@ if get_option('tests')
         dependencies: dep_zstd,
         link_with: lib,
         d_unittest: true,
+        d_debug: [true, 'meson'],
     )
     test('tests', exe_test)
 endif
