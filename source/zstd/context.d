@@ -21,9 +21,21 @@ version (unittest)
     import zstd.func;
 }
 
+/**
+ * Since libzstd 1.4.0 [ZSTD_CCtx] and [ZSTD_CStream] have been the same struct.
+ * The identical relation is kept in these bindings.
+ */
 public alias CompressionStream = CompressionContext;
+
+/**
+ * Since libzstd 1.4.0 [ZSTD_DCtx] and [ZSTD_DStream] have been the same struct.
+ * The identical relation is kept in these bindings.
+ */
 public alias DecompressionStream = DecompressionContext;
 
+/**
+ * Wraps [ZSTD_CCtx]. Resources are managed internally and are automatically freed.
+ */
 class CompressionContext
 {
     this()
@@ -36,6 +48,9 @@ class CompressionContext
         ZSTD_freeCCtx(ptr);
     }
 
+    /**
+     * Wraps [ZSTD_compressCCtx].
+     */
     size_t compress(void[] dst, const void[] src, CompressionLevel lvl)
     {
         const auto size = ZSTD_compressCCtx(ptr, dst.ptr, dst.length, src.ptr, src.length, lvl);
@@ -55,6 +70,9 @@ class CompressionContext
         assertThrown!ZSTDException(ctx.compress(null, src, 1));
     }
 
+    /**
+     * Wraps [ZSTD_compress2].
+     */
     size_t compress(void[] dst, const void[] src)
     {
         const auto size = ZSTD_compress2(
@@ -79,6 +97,9 @@ class CompressionContext
         assertThrown!ZSTDException(ctx.compress(null, src));
     }
 
+    /**
+     * Wraps [ZSTD_compress_usingDict].
+     */
     size_t compressUsingDict(void[] dst, const void[] src, const void[] dict, CompressionLevel lvl)
     {
         const auto size = ZSTD_compress_usingDict(
@@ -106,6 +127,9 @@ class CompressionContext
         assertThrown!ZSTDException(ctx.compressUsingDict(null, src, null, 1));
     }
 
+    /**
+     * Wraps [ZSTD_compress_usingCDict].
+     */
     size_t compressUsingDict(void[] dst, const void[] src, const CompressionDict cdict)
     {
         const auto size = ZSTD_compress_usingCDict(ptr,
@@ -131,6 +155,9 @@ class CompressionContext
         assertThrown!ZSTDException(ctx.compressUsingDict(null, src, dict));
     }
 
+    /**
+     * Wraps [ZSTD_CCtx_loadDictionary].
+     */
     void loadDictionary(const void[] dict)
     {
         const auto errCode = ZSTD_CCtx_loadDictionary(ptr, dict.ptr, dict.length);
@@ -144,6 +171,9 @@ class CompressionContext
         /* I can't make this throw exceptions 😐 */
     }
 
+    /**
+     * Wraps [ZSTD_CCtx_refCDict].
+     */
     void refDict(const CompressionDict dict)
     {
         const auto errCode = ZSTD_CCtx_refCDict(ptr, dict.ptr);
@@ -158,6 +188,9 @@ class CompressionContext
         /* I can't make this throw exceptions 😐 */
     }
 
+    /**
+     * Wraps [ZSTD_CCtx_refPrefix].
+     */
     void refPrefix(const void[] prefix)
     {
         const auto errCode = ZSTD_CCtx_refPrefix(ptr, prefix.ptr, prefix.length);
@@ -171,6 +204,9 @@ class CompressionContext
         /* I can't make this throw exceptions 😐 */
     }
 
+    /**
+     * Wraps [ZSTD_CCtx_setParameter].
+     */
     void setParameter(CompressionParameter param, int value)
     {
         const auto errCode = ZSTD_CCtx_setParameter(ptr, param, value);
@@ -184,6 +220,9 @@ class CompressionContext
         assertThrown!ZSTDException(ctx.setParameter(cast(CompressionParameter) 0, 0));
     }
 
+    /**
+     * Wraps [ZSTD_CCtx_setPledgedSrcSize].
+     */
     void setPledgedSrcSize(uint64_t pledgedSrcSize)
     {
         const auto errCode = ZSTD_CCtx_setPledgedSrcSize(ptr, pledgedSrcSize);
@@ -200,12 +239,18 @@ class CompressionContext
         assertThrown!ZSTDException(ctx.setPledgedSrcSize(1));
     }
 
+    /**
+     * Wraps [ZSTD_initCStream].
+     */
     void streamInit(CompressionLevel lvl)
     {
         const auto errcode = ZSTD_initCStream(ptr, lvl);
         ZSTDException.throwIfError(errcode);
     }
 
+    /**
+     * Wraps [ZSTD_compressStream].
+     */
     size_t streamCompress(OutBuffer* output, InBuffer* input)
     {
         const auto size = ZSTD_compressStream(ptr, output, input);
@@ -213,6 +258,9 @@ class CompressionContext
         return size;
     }
 
+    /**
+     * Wraps [ZSTD_compressStream2].
+     */
     size_t streamCompress(OutBuffer* output, InBuffer* input, EndDirective endOp)
     {
         const auto remain = ZSTD_compressStream2(ptr, output, input, endOp);
@@ -220,6 +268,9 @@ class CompressionContext
         return remain;
     }
 
+    /**
+     * Wraps [ZSTD_flushStream].
+     */
     size_t streamFlush(OutBuffer* output)
     {
         const auto size = ZSTD_flushStream(ptr, output);
@@ -228,6 +279,9 @@ class CompressionContext
         return size;
     }
 
+    /**
+     * Wraps [ZSTD_endStream].
+     */
     size_t streamEnd(OutBuffer* output)
     {
         const auto size = ZSTD_endStream(ptr, output);
@@ -235,21 +289,33 @@ class CompressionContext
         return size;
     }
 
+    /**
+     * Wraps [ZSTD_CStreamInSize].
+     */
     static size_t streamInSize()
     {
         return ZSTD_CStreamInSize();
     }
 
+    /**
+     * Wraps [ZSTD_CStreamOutSize].
+     */
     static size_t streamOutSize()
     {
         return ZSTD_CStreamOutSize();
     }
 
+    /**
+     * Wraps [ZSTD_sizeof_CCtx].
+     */
     size_t sizeOf()
     {
         return ZSTD_sizeof_CCtx(ptr);
     }
 
+    /**
+     * Wraps [ZSTD_CCtx_reset].
+     */
     void reset(ResetDirective directive)
     {
         const auto errCode = ZSTD_CCtx_reset(ptr, directive);
