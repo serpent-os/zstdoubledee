@@ -6,14 +6,29 @@ import std.string;
 
 import zstd.c.symbols;
 
+/**
+ * The base class of all zstd exceptions.
+ *
+ * Functions never return an error code, instead they throw this base
+ * class or a child of it.
+ */
 class ZSTDException : Exception
 {
 package:
+
+    /**
+     * Constructs the object with a custom message.
+     */
     this(string msg, string filename = __FILE__, size_t line = __LINE__) @trusted
     {
         super(msg, filename, line);
     }
 
+    /**
+     * Construct the object with a zstd error code.
+     *
+     * The exception message is obtained from [ZSTD_getErrorName].
+     */
     this(size_t code, string filename = __FILE__, size_t line = __LINE__) @trusted
     in
     {
@@ -25,6 +40,11 @@ package:
         super("%s (%d)".format(cast(string) name, code), filename, line);
     }
 
+    /**
+     * Convenience method to throw this exception in the event code is an error.
+     *
+     * Wraps [ZSTD_isError].
+     */
     static throwIfError(size_t code)
     {
         if (ZSTD_isError(code))
@@ -74,4 +94,9 @@ unittest
     assertThrown!ZSTDException(ZSTDException.throwIfError(errCode));
 }
 
+/**
+ * Defines the efficiency/speed ratio of compression operations.
+ * Higher values mean slower but smaller outcome, lower values
+ * mean faster but bigger outcome.
+ */
 alias CompressionLevel = int32_t;
