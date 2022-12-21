@@ -10,6 +10,8 @@ To build with Dub, run `dub build`.
 
 To build with Meson, run `meson setup build && meson compile -C build`. Should you prefer to build zst-d statically, pass `-Dprefer_static=true` to `meson setup`.
 
+⚠ **Note to macOS 12 users**: if you're encountering linking issues, see [this bug report](https://issues.dlang.org/show_bug.cgi?id=23517).
+
 ## Running tests
 
 To run tests with Dub, run `dub test`.
