@@ -326,6 +326,9 @@ private:
     ZSTD_CCtx* ptr;
 }
 
+/**
+ * Wraps [ZSTD_DCtx]. Resources are managed internally and are automatically freed.
+ */
 class DecompressionContext
 {
     this()
@@ -338,6 +341,9 @@ class DecompressionContext
         ZSTD_freeDCtx(ptr);
     }
 
+    /**
+     * Wraps [ZSTD_decompressDCtx].
+     */
     size_t decompress(void[] dst, const void[] src)
     {
         const auto size = ZSTD_decompressDCtx(ptr, dst.ptr, dst
@@ -346,6 +352,9 @@ class DecompressionContext
         return size;
     }
 
+    /**
+     * Wraps [ZSTD_decompress_usingDict].
+     */
     size_t decompressUsingDict(void[] dst, const void[] src, const void[] dict)
     {
         const auto size = ZSTD_decompress_usingDict(
@@ -361,6 +370,9 @@ class DecompressionContext
         return size;
     }
 
+    /**
+     * Wraps [ZSTD_decompress_usingDDict].
+     */
     size_t decompressUsingDict(void[] dst, const void[] src, const DecompressionDict ddict)
     {
         const auto size = ZSTD_decompress_usingDDict(ptr,
@@ -374,6 +386,9 @@ class DecompressionContext
         return size;
     }
 
+    /**
+     * Wraps [ZSTD_DCtx_loadDictionary].
+     */
     void loadDictionary(const void[] dict)
     {
         const auto errCode = ZSTD_DCtx_loadDictionary(ptr, dict
@@ -382,6 +397,9 @@ class DecompressionContext
             errCode);
     }
 
+    /**
+     * Wraps [ZSTD_DCtx_refDDict].
+     */
     void refDict(
         const DecompressionDict dict)
     {
@@ -391,6 +409,9 @@ class DecompressionContext
             errCode);
     }
 
+    /**
+     * Wraps [ZSTD_DCtx_refPrefix].
+     */
     void refPrefix(const void[] prefix)
     {
         const auto errCode = ZSTD_DCtx_refPrefix(ptr, prefix
@@ -399,6 +420,9 @@ class DecompressionContext
             errCode);
     }
 
+    /**
+     * Wraps [ZSTD_DCtx_setParameter].
+     */
     void setParameter(DecompressionParameter param, int value)
     {
         const auto errCode = ZSTD_DCtx_setParameter(ptr, param, value);
@@ -406,21 +430,33 @@ class DecompressionContext
             errCode);
     }
 
+    /**
+     * Wraps [ZSTD_DStreamInSize].
+     */
     static size_t streamInSize()
     {
         return ZSTD_DStreamInSize();
     }
 
+    /**
+     * Wraps [ZSTD_DStreamOutSize].
+     */
     static size_t streamOutSize()
     {
         return ZSTD_DStreamOutSize();
     }
 
+    /**
+     * Wraps [ZSTD_sizeof_DCtx].
+     */
     size_t sizeOf()
     {
         return ZSTD_sizeof_DCtx(ptr);
     }
 
+    /**
+     * Wraps [ZSTD_DCtx_reset].
+     */
     void reset(ResetDirective directive)
     {
         const auto errCode = ZSTD_DCtx_reset(ptr, directive);
