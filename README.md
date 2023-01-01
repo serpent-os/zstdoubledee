@@ -20,6 +20,6 @@ To run tests with Meson, run `meson test -C build`.
 
 ## License
 
-Copyright © 2022 Serpent OS Developers
+Copyright © 2022-2023 Serpent OS Developers
 
 Available under the terms of the [Zlib](https://spdx.org/licenses/Zlib.html).
