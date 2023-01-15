@@ -13,10 +13,11 @@ if meson.is_subproject()
 endif
 
 subdir('source/zstd')
-lib = static_library(meson.project_name(),
+lib = library(meson.project_name(),
     sources: src_lib,
     dependencies: dep_zstd,
     include_directories: src_include,
+    version: meson.project_version(),
     install: install_files,
 )
 
