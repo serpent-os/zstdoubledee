@@ -1,3 +1,7 @@
+**This project is no longer active**
+
+---
+
 # zstd-d
 
 [libzstd](https://facebook.github.io/zstd) bindings for the D language.
